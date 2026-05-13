@@ -1,4 +1,4 @@
-import { Rocket, CheckCircle2, XCircle, Clock, RotateCcw } from 'lucide-react';
+import { Rocket, Clock, RotateCcw } from 'lucide-react';
 import StatusBadge from '../components/StatusBadge';
 
 const deployments = [

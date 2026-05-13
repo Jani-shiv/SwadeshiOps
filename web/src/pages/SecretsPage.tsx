@@ -1,5 +1,4 @@
-import { Shield, Eye, EyeOff, Trash2, Plus } from 'lucide-react';
-import { useState } from 'react';
+import { Shield, Eye, Trash2, Plus } from 'lucide-react';
 
 const secrets = [
   { id: '1', name: 'DATABASE_URL', description: 'PostgreSQL connection string', env: 'all', updatedAt: '2 days ago' },
