@@ -1,0 +1,127 @@
+# ============================================
+# SwadeshiOps — Pull Request Quality Checks
+# Runs on every PR — enforces quality gates
+# ============================================
+name: PR Checks
+
+on:
+  pull_request:
+    branches: [main, develop]
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  # ─────────────────────────────────────────
+  # PR Size & Quality Labels
+  # ─────────────────────────────────────────
+  pr-labeler:
+    name: 🏷️ PR Labels
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Label PR by size
+        uses: codelytv/pr-size-labeler@v1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          xs_label: "size/XS"
+          xs_max_size: 10
+          s_label: "size/S"
+          s_max_size: 50
+          m_label: "size/M"
+          m_max_size: 200
+          l_label: "size/L"
+          l_max_size: 500
+          xl_label: "size/XL"
+          fail_if_xl: false
+
+  # ─────────────────────────────────────────
+  # Commit Message Validation
+  # ─────────────────────────────────────────
+  commit-lint:
+    name: 📏 Commit Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate commit messages
+        run: |
+          echo "Checking commit messages follow conventional commits..."
+          COMMITS=$(git log origin/${{ github.base_ref }}..HEAD --pretty=format:"%s" --no-merges)
+
+          PATTERN="^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\(.+\))?: .{1,}"
+
+          FAILED=0
+          while IFS= read -r msg; do
+            if [[ -z "$msg" ]]; then continue; fi
+            if [[ ! "$msg" =~ $PATTERN ]]; then
+              echo "❌ Bad commit message: '$msg'"
+              echo "   Expected: type(scope): description"
+              echo "   Types: feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert"
+              FAILED=1
+            else
+              echo "✅ $msg"
+            fi
+          done <<< "$COMMITS"
+
+          if [[ $FAILED -eq 1 ]]; then
+            echo ""
+            echo "💡 Use conventional commits: https://www.conventionalcommits.org"
+            exit 1
+          fi
+
+          echo "✅ All commit messages follow conventional commits!"
+
+  # ─────────────────────────────────────────
+  # Dependency Audit
+  # ─────────────────────────────────────────
+  dependency-audit:
+    name: 🔐 Dependency Audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Audit npm dependencies
+        working-directory: web
+        run: |
+          npm ci
+          npm audit --audit-level=high || true
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+
+      - name: Check Go vulnerabilities
+        run: |
+          go install golang.org/x/vuln/cmd/govulncheck@latest
+          govulncheck ./... || true
+
+  # ─────────────────────────────────────────
+  # Docker Build Validation
+  # ─────────────────────────────────────────
+  docker-lint:
+    name: 🐳 Dockerfile Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Lint Dockerfile
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: deployments/docker/Dockerfile
+          failure-threshold: warning

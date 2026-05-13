@@ -80,6 +80,9 @@ func (s *Server) setupRouter() {
 	// API v1
 	v1 := r.Group("/api/v1")
 	{
+		// Public health endpoint (used by CI/CD pipelines)
+		v1.GET("/health", s.healthCheck)
+
 		s.registerAuthRoutes(v1)
 		s.registerProtectedRoutes(v1)
 	}

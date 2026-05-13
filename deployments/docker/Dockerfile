@@ -5,6 +5,9 @@
 # Stage 1: Build
 FROM golang:1.22-alpine AS builder
 
+ARG VERSION=dev
+ARG COMMIT_SHA=unknown
+
 RUN apk add --no-cache git ca-certificates
 
 WORKDIR /app
@@ -16,9 +19,9 @@ RUN go mod download
 # Copy source
 COPY . .
 
-# Build binary
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
-    -ldflags="-w -s" \
+# Build binary with version info
+RUN CGO_ENABLED=0 GOOS=linux go build \
+    -ldflags="-w -s -X main.version=${VERSION} -X main.commitSHA=${COMMIT_SHA}" \
     -o /bin/swadeshiops \
     ./cmd/server
 
