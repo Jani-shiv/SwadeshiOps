@@ -1,0 +1,91 @@
+# ============================================
+# SwadeshiOps Docker Compose — Full Stack Dev
+# ============================================
+
+services:
+  # ─── PostgreSQL ──────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: swadeshiops-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: swadeshiops
+      POSTGRES_PASSWORD: swadeshiops_dev
+      POSTGRES_DB: swadeshiops
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U swadeshiops"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ─── Redis ───────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: swadeshiops-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ─── SwadeshiOps API ────────────────────────
+  api:
+    build:
+      context: .
+      dockerfile: deployments/docker/Dockerfile
+    container_name: swadeshiops-api
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    environment:
+      - DB_HOST=postgres
+      - REDIS_HOST=redis
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./data/logs:/app/data/logs
+
+  # ─── Prometheus ──────────────────────────────
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: swadeshiops-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./deployments/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - promdata:/prometheus
+
+  # ─── Grafana ─────────────────────────────────
+  grafana:
+    image: grafana/grafana:latest
+    container_name: swadeshiops-grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafanadata:/var/lib/grafana
+
+volumes:
+  pgdata:
+  redisdata:
+  promdata:
+  grafanadata:

@@ -1,0 +1,47 @@
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+/bin/
+/build/
+
+# Go
+vendor/
+*.test
+*.out
+coverage.html
+coverage.out
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-compose.override.yml
+
+# Logs
+logs/
+*.log
+
+# Frontend
+web/node_modules/
+web/dist/
+web/.cache/
+
+# Data
+data/
+tmp/

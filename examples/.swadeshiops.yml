@@ -1,0 +1,71 @@
+# SwadeshiOps Example Pipeline
+# Place this file as .swadeshiops.yml in your project root
+
+version: "1"
+
+pipeline:
+  name: "Node.js App CI/CD"
+
+  env:
+    NODE_ENV: production
+    APP_NAME: my-app
+
+  stages:
+    install:
+      image: node:20-alpine
+      commands:
+        - npm ci --prefer-offline
+      cache:
+        - node_modules/
+
+    lint:
+      image: node:20-alpine
+      commands:
+        - npm run lint
+      depends_on:
+        - install
+
+    test:
+      image: node:20-alpine
+      commands:
+        - npm test -- --coverage
+      depends_on:
+        - install
+
+    build:
+      image: node:20-alpine
+      commands:
+        - npm run build
+      depends_on:
+        - lint
+        - test
+
+    docker_build:
+      image: docker:24
+      commands:
+        - docker build -t ${APP_NAME}:${COMMIT_SHA} .
+        - docker tag ${APP_NAME}:${COMMIT_SHA} ${APP_NAME}:latest
+      depends_on:
+        - build
+      when:
+        branch: main
+        event: push
+
+    deploy_staging:
+      type: ssh
+      host: ${STAGING_HOST}
+      commands:
+        - cd /opt/${APP_NAME}
+        - docker compose pull
+        - docker compose up -d
+        - docker compose ps
+      depends_on:
+        - docker_build
+      when:
+        branch: main
+
+  notifications:
+    telegram:
+      on: [success, failure]
+    discord:
+      on: [failure]
