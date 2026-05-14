@@ -20,8 +20,8 @@ func NewPostgres(cfg config.DatabaseConfig) (*pgxpool.Pool, error) {
 	if cfg.MaxConns > math.MaxInt32 || cfg.MinConns > math.MaxInt32 {
 		return nil, fmt.Errorf("connection limits too high")
 	}
-	poolConfig.MaxConns = int32(cfg.MaxConns)
-	poolConfig.MinConns = int32(cfg.MinConns)
+	poolConfig.MaxConns = int32(cfg.MaxConns) // #nosec G115 -- conversion safe due to prior bounds check
+	poolConfig.MinConns = int32(cfg.MinConns) // #nosec G115 -- conversion safe due to prior bounds check
 	poolConfig.MaxConnLifetime = 30 * time.Minute
 	poolConfig.MaxConnIdleTime = 5 * time.Minute
 

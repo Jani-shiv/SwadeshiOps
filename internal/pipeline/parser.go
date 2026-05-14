@@ -8,8 +8,8 @@ import (
 
 // PipelineConfig represents the parsed pipeline YAML configuration
 type PipelineConfig struct {
-	Version  string                  `yaml:"version" json:"version"`
-	Pipeline PipelineSpec            `yaml:"pipeline" json:"pipeline"`
+	Version  string       `yaml:"version" json:"version"`
+	Pipeline PipelineSpec `yaml:"pipeline" json:"pipeline"`
 }
 
 type PipelineSpec struct {
@@ -25,14 +25,14 @@ type StageConfig struct {
 	DependsOn []string `yaml:"depends_on,omitempty" json:"depends_on,omitempty"`
 	Cache     []string `yaml:"cache,omitempty" json:"cache,omitempty"`
 	When      *When    `yaml:"when,omitempty" json:"when,omitempty"`
-	Type      string   `yaml:"type,omitempty" json:"type,omitempty"`    // ssh, docker, k8s
+	Type      string   `yaml:"type,omitempty" json:"type,omitempty"` // ssh, docker, k8s
 	Host      string   `yaml:"host,omitempty" json:"host,omitempty"`
 	Timeout   int      `yaml:"timeout,omitempty" json:"timeout,omitempty"` // seconds
 }
 
 type When struct {
 	Branch string `yaml:"branch,omitempty" json:"branch,omitempty"`
-	Event  string `yaml:"event,omitempty" json:"event,omitempty"`   // push, pull_request, tag
+	Event  string `yaml:"event,omitempty" json:"event,omitempty"` // push, pull_request, tag
 }
 
 type NotifConfig struct {

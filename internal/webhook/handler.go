@@ -17,21 +17,21 @@ import (
 
 // PushEvent represents a standardized git push event from any provider
 type PushEvent struct {
-	Provider      string `json:"provider"`       // github, gitlab, gitea
-	Ref           string `json:"ref"`            // refs/heads/main
-	Branch        string `json:"branch"`         // main
+	Provider      string `json:"provider"` // github, gitlab, gitea
+	Ref           string `json:"ref"`      // refs/heads/main
+	Branch        string `json:"branch"`   // main
 	CommitSHA     string `json:"commit_sha"`
 	CommitMessage string `json:"commit_message"`
 	CommitAuthor  string `json:"commit_author"`
 	RepoURL       string `json:"repo_url"`
 	RepoFullName  string `json:"repo_full_name"`
-	Event         string `json:"event"`          // push, pull_request
+	Event         string `json:"event"` // push, pull_request
 }
 
 // Handler handles incoming git webhooks
 type Handler struct {
-	logger    zerolog.Logger
-	onPush    func(event *PushEvent) error // callback when push event received
+	logger zerolog.Logger
+	onPush func(event *PushEvent) error // callback when push event received
 }
 
 // NewHandler creates a new webhook handler

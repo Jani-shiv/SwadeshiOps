@@ -12,12 +12,12 @@ import (
 
 // StepResult represents the result of executing a pipeline step
 type StepResult struct {
-	StepName  string
-	Status    string
-	ExitCode  int
-	Output    string
-	Duration  time.Duration
-	Error     error
+	StepName string
+	Status   string
+	ExitCode int
+	Output   string
+	Duration time.Duration
+	Error    error
 }
 
 // JobRequest represents a pipeline execution request
