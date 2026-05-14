@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Terminal, Search, Download, Pause, Play, ArrowDown } from 'lucide-react';
+import { Terminal, Search, Download, Pause, Play, ArrowDown, FileText } from 'lucide-react';
 
 // Demo log lines for visualization
 const demoLogs = [
@@ -47,8 +47,8 @@ const demoLogs = [
 ];
 
 const levelColors: Record<string, string> = {
-  info: '#94a3b8',
-  debug: '#64748b',
+  info: '#8B95A5',
+  debug: '#5A6374',
   warn: '#F59E0B',
   error: '#EF4444',
   success: '#10B981',
@@ -92,78 +92,76 @@ export default function LogsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between animate-fade-in">
         <div>
-          <h1 className="text-2xl font-bold text-white">Live Logs</h1>
-          <p className="text-sm text-slate-400 mt-1">Pipeline Run #42 — Node.js App CI/CD</p>
+          <h1 className="text-[28px] font-extrabold text-white tracking-tight">Live Logs</h1>
+          <p className="text-sm text-slate-400 mt-1 font-medium">Pipeline Run #42 — Node.js App CI/CD</p>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={() => setIsPaused(!isPaused)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold transition-all glass-card"
             style={{
-              background: isPaused ? 'rgba(16,185,129,0.1)' : 'rgba(245,158,11,0.1)',
               color: isPaused ? '#10B981' : '#F59E0B',
-              border: `1px solid ${isPaused ? 'rgba(16,185,129,0.2)' : 'rgba(245,158,11,0.2)'}`,
+              borderColor: isPaused ? 'rgba(16,185,129,0.15)' : 'rgba(245,158,11,0.15)',
             }}
           >
-            {isPaused ? <Play size={12} /> : <Pause size={12} />}
+            {isPaused ? <Play size={13} /> : <Pause size={13} />}
             {isPaused ? 'Resume' : 'Pause'}
           </button>
-          <button
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition-colors"
-            style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}
-          >
-            <Download size={12} />
+          <button className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold btn-ghost">
+            <Download size={13} />
             Download
           </button>
         </div>
       </div>
 
       {/* Search/Filter Bar */}
-      <div
-        className="flex items-center gap-3 px-4 py-3 rounded-xl"
-        style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}
-      >
+      <div className="glass-card flex items-center gap-3 px-4 py-3 rounded-2xl animate-fade-in" style={{ animationDelay: '100ms' }}>
         <Search size={16} className="text-slate-500" />
         <input
           type="text"
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
           placeholder="Filter logs... (e.g. 'error', 'npm', 'test')"
-          className="flex-1 bg-transparent text-sm text-white placeholder-slate-500 outline-none"
+          className="flex-1 bg-transparent text-sm text-white placeholder-slate-500 outline-none font-medium"
         />
-        <span className="text-xs text-slate-500">
+        <span className="text-[11px] text-slate-500 font-mono font-medium">
           {filteredLogs.length} / {logs.length} lines
         </span>
       </div>
 
       {/* Log Terminal */}
       <div
-        className="rounded-xl overflow-hidden"
+        className="rounded-2xl overflow-hidden animate-fade-in"
         style={{
-          background: '#0D1117',
-          border: '1px solid rgba(255,255,255,0.08)',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+          animationDelay: '200ms',
+          background: '#080C14',
+          border: '1px solid rgba(255,255,255,0.06)',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.02)',
         }}
       >
         {/* Terminal Header */}
         <div
-          className="flex items-center justify-between px-4 py-2.5"
-          style={{ background: '#161B22', borderBottom: '1px solid rgba(255,255,255,0.06)' }}
+          className="flex items-center justify-between px-5 py-3"
+          style={{ background: '#0E1420', borderBottom: '1px solid rgba(255,255,255,0.05)' }}
         >
-          <div className="flex items-center gap-2">
-            <div className="flex gap-1.5">
-              <div className="w-3 h-3 rounded-full" style={{ background: '#FF5F56' }} />
-              <div className="w-3 h-3 rounded-full" style={{ background: '#FFBD2E' }} />
-              <div className="w-3 h-3 rounded-full" style={{ background: '#27C93F' }} />
+          <div className="flex items-center gap-3">
+            <div className="flex gap-2">
+              <div className="w-3 h-3 rounded-full transition-opacity hover:opacity-80" style={{ background: '#FF5F56' }} />
+              <div className="w-3 h-3 rounded-full transition-opacity hover:opacity-80" style={{ background: '#FFBD2E' }} />
+              <div className="w-3 h-3 rounded-full transition-opacity hover:opacity-80" style={{ background: '#27C93F' }} />
             </div>
-            <Terminal size={14} className="text-slate-500 ml-2" />
-            <span className="text-xs text-slate-500 font-mono">pipeline-run-42.log</span>
+            <div className="flex items-center gap-2 ml-2">
+              <FileText size={13} className="text-slate-600" />
+              <span className="text-[11px] text-slate-500 font-mono font-medium">pipeline-run-42.log</span>
+            </div>
           </div>
           <button
             onClick={() => setAutoScroll(!autoScroll)}
-            className={`flex items-center gap-1 text-xs transition-colors ${autoScroll ? 'text-emerald-400' : 'text-slate-500'}`}
+            className={`flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-lg transition-all ${
+              autoScroll ? 'text-emerald-400 bg-emerald-400/5' : 'text-slate-500 hover:text-slate-400'
+            }`}
           >
             <ArrowDown size={12} />
             Auto-scroll {autoScroll ? 'ON' : 'OFF'}
@@ -173,23 +171,27 @@ export default function LogsPage() {
         {/* Log Content */}
         <div
           ref={logRef}
-          className="p-4 overflow-y-auto font-mono text-[13px] leading-6"
-          style={{ maxHeight: '600px', minHeight: '400px' }}
+          className="p-5 overflow-y-auto font-mono text-[12.5px] leading-[1.8]"
+          style={{ maxHeight: '560px', minHeight: '400px' }}
         >
           {filteredLogs.length === 0 ? (
-            <div className="flex items-center justify-center h-32 text-slate-500 text-sm">
+            <div className="flex flex-col items-center justify-center h-40 text-slate-500 text-sm gap-3">
+              <Terminal size={24} className="text-slate-600" />
               {logs.length === 0 ? 'Waiting for logs...' : 'No matching log lines'}
             </div>
           ) : (
             filteredLogs.map((log, idx) => (
               <div
                 key={idx}
-                className="flex gap-3 hover:bg-white/[0.02] px-2 -mx-2 rounded animate-fade-in"
+                className="flex gap-3 hover:bg-white/[0.015] px-3 -mx-3 rounded-lg transition-colors"
               >
-                <span className="text-slate-600 select-none shrink-0 w-24">
+                <span className="text-slate-600 select-none shrink-0 w-[100px] text-[11px]">
                   {log.time}
                 </span>
-                <span style={{ color: levelColors[log.level] || '#94a3b8' }}>
+                <span className="text-[10px] uppercase font-bold w-[48px] shrink-0 tracking-wider" style={{ color: `${levelColors[log.level]}80` }}>
+                  {log.level}
+                </span>
+                <span style={{ color: levelColors[log.level] || '#8B95A5' }}>
                   {log.text || '\u00A0'}
                 </span>
               </div>
@@ -198,9 +200,17 @@ export default function LogsPage() {
 
           {/* Cursor blink */}
           {!isPaused && logs.length < demoLogs.length && (
-            <div className="flex gap-3 px-2 -mx-2">
-              <span className="text-slate-600 w-24" />
-              <span className="w-2 h-5 bg-emerald-400 animate-pulse" />
+            <div className="flex gap-3 px-3 -mx-3">
+              <span className="w-[100px]" />
+              <span className="w-[48px]" />
+              <span
+                className="w-2 h-[18px] rounded-sm"
+                style={{
+                  background: '#10B981',
+                  animation: 'pulse 1s ease-in-out infinite',
+                  boxShadow: '0 0 6px rgba(16, 185, 129, 0.4)',
+                }}
+              />
             </div>
           )}
         </div>
