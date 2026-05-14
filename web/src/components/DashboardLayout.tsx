@@ -1,12 +1,25 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
+import TopBar from '../components/TopBar';
 import { useState } from 'react';
+
+const pageMeta: Record<string, { title: string; breadcrumb: string }> = {
+  '/': { title: 'Dashboard', breadcrumb: 'Overview' },
+  '/projects': { title: 'Projects', breadcrumb: 'Projects' },
+  '/pipelines': { title: 'Pipelines', breadcrumb: 'Pipelines' },
+  '/deployments': { title: 'Deployments', breadcrumb: 'Deployments' },
+  '/logs': { title: 'Logs', breadcrumb: 'Live Logs' },
+  '/secrets': { title: 'Secrets', breadcrumb: 'Secrets & Variables' },
+  '/settings': { title: 'Settings', breadcrumb: 'Settings' },
+};
 
 export default function DashboardLayout() {
   const [collapsed, setCollapsed] = useState(false);
+  const location = useLocation();
+  const meta = pageMeta[location.pathname] || pageMeta['/'];
 
   return (
-    <div className="min-h-screen relative" style={{ background: 'var(--color-navy)' }}>
+    <div className="min-h-screen relative noise-overlay" style={{ background: 'var(--color-navy)' }}>
       {/* Ambient gradient mesh */}
       <div className="mesh-gradient" />
 
@@ -18,21 +31,14 @@ export default function DashboardLayout() {
         className="relative z-10 transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]"
         style={{
           marginLeft: collapsed ? 72 : 260,
-          padding: '32px 40px',
           minHeight: '100vh',
         }}
       >
-        {/* Top fade gradient */}
-        <div
-          className="fixed top-0 right-0 h-24 z-20 pointer-events-none"
-          style={{
-            left: collapsed ? 72 : 260,
-            background: 'linear-gradient(to bottom, var(--color-navy), transparent)',
-            transition: 'left 0.5s cubic-bezier(0.4,0,0.2,1)',
-          }}
-        />
+        {/* Top Bar */}
+        <TopBar breadcrumb={meta.breadcrumb} collapsed={collapsed} />
 
-        <div className="relative z-10">
+        {/* Page Content */}
+        <div className="relative z-10 px-8 pb-10 pt-4">
           <Outlet />
         </div>
       </main>

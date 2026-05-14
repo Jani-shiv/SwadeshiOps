@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { Terminal, Search, Download, Pause, Play, ArrowDown, FileText } from 'lucide-react';
+import { Terminal, Search, Download, Pause, Play, ArrowDown, FileText, Copy, Maximize2, Filter } from 'lucide-react';
 
-// Demo log lines for visualization
 const demoLogs = [
   { time: '19:30:01.123', level: 'info', text: '=== Pipeline: Node.js App CI/CD ===' },
   { time: '19:30:01.124', level: 'info', text: '=== Step: install ===' },
@@ -54,14 +53,20 @@ const levelColors: Record<string, string> = {
   success: '#10B981',
 };
 
+const levelBg: Record<string, string> = {
+  warn: 'rgba(245,158,11,0.03)',
+  error: 'rgba(239,68,68,0.04)',
+  success: 'rgba(16,185,129,0.02)',
+};
+
 export default function LogsPage() {
   const [logs, setLogs] = useState<typeof demoLogs>([]);
   const [filter, setFilter] = useState('');
+  const [levelFilter, setLevelFilter] = useState('all');
   const [isPaused, setIsPaused] = useState(false);
   const [autoScroll, setAutoScroll] = useState(true);
   const logRef = useRef<HTMLDivElement>(null);
 
-  // Simulate streaming logs
   useEffect(() => {
     if (isPaused) return;
 
@@ -78,29 +83,30 @@ export default function LogsPage() {
     return () => clearInterval(interval);
   }, [isPaused]);
 
-  // Auto-scroll
   useEffect(() => {
     if (autoScroll && logRef.current) {
       logRef.current.scrollTop = logRef.current.scrollHeight;
     }
   }, [logs, autoScroll]);
 
-  const filteredLogs = logs.filter(
-    (log) => !filter || log.text.toLowerCase().includes(filter.toLowerCase())
-  );
+  const filteredLogs = logs
+    .filter((log) => !filter || log.text.toLowerCase().includes(filter.toLowerCase()))
+    .filter((log) => levelFilter === 'all' || log.level === levelFilter);
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between animate-fade-in">
         <div>
-          <h1 className="text-[28px] font-extrabold text-white tracking-tight">Live Logs</h1>
-          <p className="text-sm text-slate-400 mt-1 font-medium">Pipeline Run #42 — Node.js App CI/CD</p>
+          <h1 className="text-[30px] font-extrabold text-white tracking-tight">Live Logs</h1>
+          <p className="text-sm text-slate-400 mt-1 font-medium">
+            Pipeline Run #42 — Node.js App CI/CD
+          </p>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={() => setIsPaused(!isPaused)}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold transition-all glass-card"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-[11px] font-bold transition-all glass-card-flat"
             style={{
               color: isPaused ? '#10B981' : '#F59E0B',
               borderColor: isPaused ? 'rgba(16,185,129,0.15)' : 'rgba(245,158,11,0.15)',
@@ -109,69 +115,103 @@ export default function LogsPage() {
             {isPaused ? <Play size={13} /> : <Pause size={13} />}
             {isPaused ? 'Resume' : 'Pause'}
           </button>
-          <button className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold btn-ghost">
+          <button className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-[11px] font-bold btn-ghost">
+            <Copy size={13} />
+            Copy
+          </button>
+          <button className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-[11px] font-bold btn-ghost">
             <Download size={13} />
             Download
+          </button>
+          <button className="p-2 rounded-xl btn-ghost">
+            <Maximize2 size={14} />
           </button>
         </div>
       </div>
 
       {/* Search/Filter Bar */}
-      <div className="glass-card flex items-center gap-3 px-4 py-3 rounded-2xl animate-fade-in" style={{ animationDelay: '100ms' }}>
-        <Search size={16} className="text-slate-500" />
-        <input
-          type="text"
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-          placeholder="Filter logs... (e.g. 'error', 'npm', 'test')"
-          className="flex-1 bg-transparent text-sm text-white placeholder-slate-500 outline-none font-medium"
-        />
-        <span className="text-[11px] text-slate-500 font-mono font-medium">
-          {filteredLogs.length} / {logs.length} lines
-        </span>
+      <div className="flex items-center gap-3 animate-fade-in" style={{ animationDelay: '80ms' }}>
+        <div className="glass-card-flat flex items-center gap-3 px-4 py-3 rounded-xl flex-1">
+          <Search size={15} className="text-slate-500" />
+          <input
+            type="text"
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            placeholder="Filter logs... (e.g. 'error', 'npm', 'test')"
+            className="flex-1 bg-transparent text-[12px] text-white placeholder-slate-500 outline-none font-medium"
+          />
+          <span className="text-[10px] text-slate-500 font-mono font-bold">
+            {filteredLogs.length}/{logs.length}
+          </span>
+        </div>
+
+        {/* Level Filter */}
+        <div className="flex items-center gap-1">
+          <Filter size={12} className="text-slate-500 mr-1" />
+          {['all', 'info', 'warn', 'error', 'success'].map(level => (
+            <button
+              key={level}
+              onClick={() => setLevelFilter(level)}
+              className={`px-2 py-1 rounded-md text-[9px] font-bold uppercase transition-all ${
+                levelFilter === level ? 'text-white' : 'text-slate-500 hover:text-slate-300'
+              }`}
+              style={levelFilter === level ? { background: `${levelColors[level] || '#FF6B2B'}15`, color: levelColors[level] || '#FF6B2B' } : {}}
+            >
+              {level}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Log Terminal */}
       <div
         className="rounded-2xl overflow-hidden animate-fade-in"
         style={{
-          animationDelay: '200ms',
-          background: '#080C14',
-          border: '1px solid rgba(255,255,255,0.06)',
-          boxShadow: '0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.02)',
+          animationDelay: '150ms',
+          background: '#06090F',
+          border: '1px solid rgba(255,255,255,0.05)',
+          boxShadow: '0 8px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.02)',
         }}
       >
         {/* Terminal Header */}
         <div
-          className="flex items-center justify-between px-5 py-3"
-          style={{ background: '#0E1420', borderBottom: '1px solid rgba(255,255,255,0.05)' }}
+          className="flex items-center justify-between px-5 py-2.5"
+          style={{ background: '#0C1018', borderBottom: '1px solid rgba(255,255,255,0.04)' }}
         >
           <div className="flex items-center gap-3">
-            <div className="flex gap-2">
+            <div className="flex gap-1.5">
               <div className="w-3 h-3 rounded-full transition-opacity hover:opacity-80" style={{ background: '#FF5F56' }} />
               <div className="w-3 h-3 rounded-full transition-opacity hover:opacity-80" style={{ background: '#FFBD2E' }} />
               <div className="w-3 h-3 rounded-full transition-opacity hover:opacity-80" style={{ background: '#27C93F' }} />
             </div>
-            <div className="flex items-center gap-2 ml-2">
-              <FileText size={13} className="text-slate-600" />
-              <span className="text-[11px] text-slate-500 font-mono font-medium">pipeline-run-42.log</span>
+            <div className="flex items-center gap-2 ml-1">
+              <FileText size={12} className="text-slate-600" />
+              <span className="text-[10px] text-slate-500 font-mono font-bold">pipeline-run-42.log</span>
             </div>
           </div>
-          <button
-            onClick={() => setAutoScroll(!autoScroll)}
-            className={`flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-lg transition-all ${
-              autoScroll ? 'text-emerald-400 bg-emerald-400/5' : 'text-slate-500 hover:text-slate-400'
-            }`}
-          >
-            <ArrowDown size={12} />
-            Auto-scroll {autoScroll ? 'ON' : 'OFF'}
-          </button>
+          <div className="flex items-center gap-2">
+            {!isPaused && logs.length < demoLogs.length && (
+              <span className="flex items-center gap-1.5 text-[10px] font-bold text-blue-400">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+                Streaming
+              </span>
+            )}
+            <button
+              onClick={() => setAutoScroll(!autoScroll)}
+              className={`flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-md transition-all ${
+                autoScroll ? 'text-emerald-400 bg-emerald-400/5' : 'text-slate-500 hover:text-slate-400'
+              }`}
+            >
+              <ArrowDown size={11} />
+              Auto-scroll
+            </button>
+          </div>
         </div>
 
         {/* Log Content */}
         <div
           ref={logRef}
-          className="p-5 overflow-y-auto font-mono text-[12.5px] leading-[1.8]"
+          className="px-0 py-3 overflow-y-auto font-mono text-[12px] leading-[1.85]"
           style={{ maxHeight: '560px', minHeight: '400px' }}
         >
           {filteredLogs.length === 0 ? (
@@ -183,15 +223,26 @@ export default function LogsPage() {
             filteredLogs.map((log, idx) => (
               <div
                 key={idx}
-                className="flex gap-3 hover:bg-white/[0.015] px-3 -mx-3 rounded-lg transition-colors"
+                className="flex gap-0 hover:bg-white/[0.02] transition-colors group"
+                style={{ background: levelBg[log.level] || 'transparent' }}
               >
-                <span className="text-slate-600 select-none shrink-0 w-[100px] text-[11px]">
+                {/* Line number */}
+                <span className="text-slate-700 select-none text-right pr-3 pl-4 text-[10px] w-[50px] shrink-0 font-mono">
+                  {idx + 1}
+                </span>
+                {/* Timestamp */}
+                <span className="text-slate-600 select-none shrink-0 w-[100px] text-[10.5px] pr-2">
                   {log.time}
                 </span>
-                <span className="text-[10px] uppercase font-bold w-[48px] shrink-0 tracking-wider" style={{ color: `${levelColors[log.level]}80` }}>
+                {/* Level */}
+                <span
+                  className="text-[9px] uppercase font-bold w-[50px] shrink-0 tracking-wider text-center"
+                  style={{ color: `${levelColors[log.level]}90` }}
+                >
                   {log.level}
                 </span>
-                <span style={{ color: levelColors[log.level] || '#8B95A5' }}>
+                {/* Text */}
+                <span className="pl-2 pr-4" style={{ color: levelColors[log.level] || '#8B95A5' }}>
                   {log.text || '\u00A0'}
                 </span>
               </div>
@@ -200,15 +251,16 @@ export default function LogsPage() {
 
           {/* Cursor blink */}
           {!isPaused && logs.length < demoLogs.length && (
-            <div className="flex gap-3 px-3 -mx-3">
+            <div className="flex gap-0 pl-4">
+              <span className="w-[50px]" />
               <span className="w-[100px]" />
-              <span className="w-[48px]" />
+              <span className="w-[50px]" />
               <span
-                className="w-2 h-[18px] rounded-sm"
+                className="ml-2 w-2 h-[18px] rounded-sm"
                 style={{
                   background: '#10B981',
                   animation: 'pulse 1s ease-in-out infinite',
-                  boxShadow: '0 0 6px rgba(16, 185, 129, 0.4)',
+                  boxShadow: '0 0 8px rgba(16, 185, 129, 0.5)',
                 }}
               />
             </div>
