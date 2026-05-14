@@ -133,7 +133,7 @@ func (wp *WorkerPool) processJob(workerID int, job *JobRequest) {
 	for _, step := range job.Steps {
 		select {
 		case <-wp.ctx.Done():
-			wp.logger.Warn().Msg("Worker cancelled during job execution")
+			wp.logger.Warn().Msg("Worker canceled during job execution")
 			return
 		default:
 		}

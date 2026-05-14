@@ -71,7 +71,9 @@ func RunMigrations(pool *pgxpool.Pool) error {
 		}
 
 		if _, err := tx.Exec(ctx, string(content)); err != nil {
-			tx.Rollback(ctx)
+			if rbErr := tx.Rollback(ctx); rbErr != nil {
+				return fmt.Errorf("failed to execute migration %s and rollback failed (%v): %w", version, rbErr, err)
+			}
 			return fmt.Errorf("failed to execute migration %s: %w", version, err)
 		}
 
@@ -79,7 +81,9 @@ func RunMigrations(pool *pgxpool.Pool) error {
 			"INSERT INTO schema_migrations (version) VALUES ($1)",
 			version,
 		); err != nil {
-			tx.Rollback(ctx)
+			if rbErr := tx.Rollback(ctx); rbErr != nil {
+				return fmt.Errorf("failed to record migration %s and rollback failed (%v): %w", version, rbErr, err)
+			}
 			return fmt.Errorf("failed to record migration %s: %w", version, err)
 		}
 

@@ -18,7 +18,7 @@ type Notifier interface {
 type Message struct {
 	Title     string
 	Body      string
-	Status    string // success, failed, cancelled
+	Status    string // success, failed, canceled
 	Project   string
 	Pipeline  string
 	Branch    string
@@ -50,7 +50,7 @@ func (t *TelegramNotifier) Send(msg *Message) error {
 	emoji := "✅"
 	if msg.Status == "failed" {
 		emoji = "❌"
-	} else if msg.Status == "cancelled" {
+	} else if msg.Status == "canceled" {
 		emoji = "⚠️"
 	}
 

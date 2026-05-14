@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"sync"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -26,7 +25,6 @@ var upgrader = websocket.Upgrader{
 type Streamer struct {
 	redis  *redis.Client
 	logger zerolog.Logger
-	mu     sync.RWMutex
 }
 
 // NewStreamer creates a new log streamer

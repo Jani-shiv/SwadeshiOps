@@ -45,14 +45,14 @@ type TokenResponse struct {
 
 // UserResponse is the safe user representation for API responses
 type UserResponse struct {
-	ID        uuid.UUID  `json:"id"`
-	Email     string     `json:"email"`
-	Username  string     `json:"username"`
-	FullName  string     `json:"full_name"`
-	AvatarURL string     `json:"avatar_url,omitempty"`
-	Role      string     `json:"role"`
-	IsActive  bool       `json:"is_active"`
-	CreatedAt time.Time  `json:"created_at"`
+	ID        uuid.UUID `json:"id"`
+	Email     string    `json:"email"`
+	Username  string    `json:"username"`
+	FullName  string    `json:"full_name"`
+	AvatarURL string    `json:"avatar_url,omitempty"`
+	Role      string    `json:"role"`
+	IsActive  bool      `json:"is_active"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 // ToResponse converts a User to a safe UserResponse

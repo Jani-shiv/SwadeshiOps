@@ -10,12 +10,12 @@ import (
 type RunStatus string
 
 const (
-	StatusQueued    RunStatus = "queued"
-	StatusRunning   RunStatus = "running"
-	StatusSuccess   RunStatus = "success"
-	StatusFailed    RunStatus = "failed"
-	StatusCancelled RunStatus = "cancelled"
-	StatusTimeout   RunStatus = "timeout"
+	StatusQueued   RunStatus = "queued"
+	StatusRunning  RunStatus = "running"
+	StatusSuccess  RunStatus = "success"
+	StatusFailed   RunStatus = "failed"
+	StatusCanceled RunStatus = "canceled"
+	StatusTimeout  RunStatus = "timeout"
 )
 
 // Pipeline represents a pipeline definition
@@ -34,22 +34,22 @@ type Pipeline struct {
 
 // PipelineRun represents a single execution of a pipeline
 type PipelineRun struct {
-	ID             uuid.UUID  `json:"id"`
-	PipelineID     uuid.UUID  `json:"pipeline_id"`
-	ProjectID      uuid.UUID  `json:"project_id"`
-	RunNumber      int        `json:"run_number"`
-	Status         RunStatus  `json:"status"`
-	TriggerType    string     `json:"trigger_type"`
-	TriggerRef     string     `json:"trigger_ref"`
-	CommitSHA      string     `json:"commit_sha"`
-	CommitMessage  string     `json:"commit_message"`
-	CommitAuthor   string     `json:"commit_author"`
-	StartedAt      *time.Time `json:"started_at,omitempty"`
-	FinishedAt     *time.Time `json:"finished_at,omitempty"`
-	DurationMs     int64      `json:"duration_ms"`
-	RunnerID       *uuid.UUID `json:"runner_id,omitempty"`
-	ErrorMessage   string     `json:"error_message,omitempty"`
-	CreatedAt      time.Time  `json:"created_at"`
+	ID            uuid.UUID  `json:"id"`
+	PipelineID    uuid.UUID  `json:"pipeline_id"`
+	ProjectID     uuid.UUID  `json:"project_id"`
+	RunNumber     int        `json:"run_number"`
+	Status        RunStatus  `json:"status"`
+	TriggerType   string     `json:"trigger_type"`
+	TriggerRef    string     `json:"trigger_ref"`
+	CommitSHA     string     `json:"commit_sha"`
+	CommitMessage string     `json:"commit_message"`
+	CommitAuthor  string     `json:"commit_author"`
+	StartedAt     *time.Time `json:"started_at,omitempty"`
+	FinishedAt    *time.Time `json:"finished_at,omitempty"`
+	DurationMs    int64      `json:"duration_ms"`
+	RunnerID      *uuid.UUID `json:"runner_id,omitempty"`
+	ErrorMessage  string     `json:"error_message,omitempty"`
+	CreatedAt     time.Time  `json:"created_at"`
 }
 
 // PipelineStep represents a single step within a pipeline run

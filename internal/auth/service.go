@@ -174,7 +174,11 @@ func (s *Service) ValidateToken(tokenStr string) (*Claims, error) {
 		return nil, fmt.Errorf("invalid token claims")
 	}
 
-	userID, err := uuid.Parse(mapClaims["sub"].(string))
+	sub, ok := mapClaims["sub"].(string)
+	if !ok {
+		return nil, fmt.Errorf("invalid sub in token claims")
+	}
+	userID, err := uuid.Parse(sub)
 	if err != nil {
 		return nil, fmt.Errorf("invalid user ID in token")
 	}

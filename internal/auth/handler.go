@@ -70,7 +70,11 @@ func (h *Handler) Me(c *gin.Context) {
 		return
 	}
 
-	authClaims := claims.(*Claims)
+	authClaims, ok := claims.(*Claims)
+	if !ok {
+		response.Unauthorized(c, "Invalid claims type")
+		return
+	}
 	user, err := h.service.GetUser(c.Request.Context(), authClaims.UserID)
 	if err != nil {
 		response.NotFound(c, "User not found")

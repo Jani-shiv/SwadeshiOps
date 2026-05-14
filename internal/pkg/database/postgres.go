@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"fmt"
+	"math"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -16,6 +17,9 @@ func NewPostgres(cfg config.DatabaseConfig) (*pgxpool.Pool, error) {
 		return nil, fmt.Errorf("failed to parse database config: %w", err)
 	}
 
+	if cfg.MaxConns > math.MaxInt32 || cfg.MinConns > math.MaxInt32 {
+		return nil, fmt.Errorf("connection limits too high")
+	}
 	poolConfig.MaxConns = int32(cfg.MaxConns)
 	poolConfig.MinConns = int32(cfg.MinConns)
 	poolConfig.MaxConnLifetime = 30 * time.Minute
