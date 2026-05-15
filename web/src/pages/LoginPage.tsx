@@ -32,14 +32,8 @@ export default function LoginPage() {
         navigate('/');
       }
     } catch (err: unknown) {
-      const axiosError = err as { response?: { data?: { error?: { message?: string } } }, request?: unknown };
-      if (axiosError.response) {
-        setError(axiosError.response.data?.error?.message || 'Something went wrong');
-      } else if (axiosError.request) {
-        setError('Unable to connect to the server. Please ensure the backend is running.');
-      } else {
-        setError('Something went wrong');
-      }
+      const errorObj = err as Error;
+      setError(errorObj.message || 'Something went wrong. Please check your credentials and try again.');
     } finally {
       setLoading(false);
     }
