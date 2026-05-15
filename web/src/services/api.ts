@@ -53,6 +53,11 @@ export const authAPI = {
     return data;
   },
 
+  sync: async (user: { id: string; email: string; full_name?: string; username?: string }) => {
+    const { data } = await api.post<APIResponse<User>>('/auth/sync', user);
+    return data;
+  },
+
   logout: () => {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
@@ -86,6 +91,11 @@ export const orgsAPI = {
 
   create: async (org: { name: string; slug?: string }) => {
     const { data } = await api.post<APIResponse<Organization>>('/orgs', org);
+    return data;
+  },
+
+  workspace: async (orgId: string) => {
+    const { data } = await api.get<APIResponse<WorkspaceData>>(`/orgs/${orgId}/workspace`);
     return data;
   },
 };

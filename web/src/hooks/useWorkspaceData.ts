@@ -32,32 +32,12 @@ export function useWorkspaceData() {
       const activeOrg = orgs[0];
       if (!activeOrg) return emptyWorkspace;
 
-      const [projectsRes, statsRes] = await Promise.all([
-        projectsAPI.list(activeOrg.id),
-        statsAPI.org(activeOrg.id),
-      ]);
-      const projects = projectsRes.data ?? [];
-
-      const pipelineGroups = await Promise.all(projects.map((project) => pipelinesAPI.list(project.id)));
-      const pipelines = pipelineGroups.flatMap((group) => group.data ?? []);
-
-      const [runGroups, deploymentGroups, secretGroups, envVarGroups] = await Promise.all([
-        Promise.all(pipelines.map((pipeline) => pipelinesAPI.runs(pipeline.id))),
-        Promise.all(projects.map((project) => deploymentsAPI.list(project.id))),
-        Promise.all(projects.map((project) => secretsAPI.list(project.id))),
-        Promise.all(projects.map((project) => envVarsAPI.list(project.id))),
-      ]);
+      const res = await orgsAPI.workspace(activeOrg.id);
+      if (!res.data) return emptyWorkspace;
 
       return {
-        orgs,
-        activeOrg,
-        projects,
-        pipelines,
-        runs: runGroups.flatMap((group) => group.data ?? []),
-        deployments: deploymentGroups.flatMap((group) => group.data ?? []),
-        secrets: secretGroups.flatMap((group) => group.data ?? []),
-        envVars: envVarGroups.flatMap((group) => group.data ?? []),
-        stats: statsRes.data,
+        ...res.data,
+        activeOrg, // Add this for convenience if needed
       };
     },
   });

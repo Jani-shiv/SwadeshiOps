@@ -37,6 +37,7 @@ services:
       timeout: 5s
       retries: 5
 
+
   # ─── SwadeshiOps API ────────────────────────
   api:
     build:
@@ -44,6 +45,8 @@ services:
       dockerfile: deployments/docker/Dockerfile
     container_name: swadeshiops-api
     restart: unless-stopped
+    # We keep port 8080 exposed for internal monitoring/direct access if needed
+    # but in full production we'd route through Nginx
     ports:
       - "8080:8080"
     env_file:
@@ -59,6 +62,18 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./data/logs:/app/data/logs
+
+  # ─── SwadeshiOps Frontend ───────────────────
+  frontend:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    container_name: swadeshiops-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - api
 
   # ─── Prometheus ──────────────────────────────
   prometheus:

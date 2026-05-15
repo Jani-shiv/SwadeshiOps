@@ -4,7 +4,9 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/swadeshiops/swadeshiops/internal/pkg/response"
+	"strings"
 )
 
 // Handler handles auth HTTP requests
@@ -59,6 +61,45 @@ func (h *Handler) Login(c *gin.Context) {
 		"tokens": tokens,
 		"user":   user.ToResponse(),
 	})
+}
+
+func (h *Handler) Sync(c *gin.Context) {
+	var req struct {
+		Email    string `json:"email" binding:"required"`
+		Username string `json:"username"`
+		FullName string `json:"full_name"`
+		ID       string `json:"id"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.BadRequest(c, err.Error())
+		return
+	}
+
+	userID, err := uuid.Parse(req.ID)
+	if err != nil {
+		response.BadRequest(c, "Invalid UUID")
+		return
+	}
+
+	if req.Username == "" {
+		req.Username = strings.Split(req.Email, "@")[0]
+	}
+
+	user := &User{
+		ID:       userID,
+		Email:    req.Email,
+		Username: req.Username,
+		FullName: req.FullName,
+		Role:     "member",
+		IsActive: true,
+	}
+
+	if err := h.service.repo.Create(c.Request.Context(), user); err != nil {
+		response.InternalError(c, "Failed to sync user: "+err.Error())
+		return
+	}
+
+	response.Success(c, http.StatusOK, user.ToResponse())
 }
 
 // Me returns the current user profile

@@ -487,6 +487,78 @@ func (r *Repository) OrgStats(ctx context.Context, orgID, userID uuid.UUID) (*Da
 	return stats, nil
 }
 
+func (r *Repository) GetWorkspaceData(ctx context.Context, orgID, userID uuid.UUID) (*WorkspaceData, error) {
+	if err := r.requireOrgAccess(ctx, orgID, userID); err != nil {
+		return nil, err
+	}
+
+	data := &WorkspaceData{}
+
+	// Orgs
+	orgs, err := r.ListOrganizations(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+	data.Orgs = orgs
+
+	// Projects
+	projects, err := r.ListProjects(ctx, orgID, userID)
+	if err != nil {
+		return nil, err
+	}
+	data.Projects = projects
+
+	// Stats
+	stats, err := r.OrgStats(ctx, orgID, userID)
+	if err != nil {
+		return nil, err
+	}
+	data.Stats = stats
+
+	// Pipelines (bulk fetch)
+	rowsP, err := r.db.Query(ctx, `
+		SELECT id, project_id, name, config_yaml, trigger_type, trigger_branch, is_active, created_at, updated_at
+		FROM pipelines
+		WHERE project_id IN (SELECT id FROM projects WHERE org_id = $1)
+	`, orgID)
+	if err == nil {
+		data.Pipelines, _ = scanPipelines(rowsP)
+		rowsP.Close()
+	}
+
+	// Runs (bulk fetch recent)
+	rowsR, err := r.db.Query(ctx, `
+		SELECT pr.id, pr.pipeline_id, pr.project_id, pr.run_number, pr.status, COALESCE(pr.trigger_type, ''), COALESCE(pr.trigger_ref, ''),
+		       COALESCE(pr.commit_sha, ''), COALESCE(pr.commit_message, ''), COALESCE(pr.commit_author, ''),
+		       pr.started_at, pr.finished_at, COALESCE(pr.duration_ms, 0), COALESCE(pr.error_message, ''), pr.created_at
+		FROM pipeline_runs pr
+		JOIN projects p ON p.id = pr.project_id
+		WHERE p.org_id = $1
+		ORDER BY pr.created_at DESC
+		LIMIT 50
+	`, orgID)
+	if err == nil {
+		data.Runs, _ = scanRuns(rowsR)
+		rowsR.Close()
+	}
+
+	// Deployments (bulk fetch recent)
+	rowsD, err := r.db.Query(ctx, `
+		SELECT d.id, d.project_id, d.run_id, d.environment, d.status, COALESCE(d.deploy_type, ''), COALESCE(d.target_host, ''), COALESCE(d.commit_sha, ''), d.started_at, d.finished_at, d.created_at
+		FROM deployments d
+		JOIN projects p ON p.id = d.project_id
+		WHERE p.org_id = $1
+		ORDER BY d.created_at DESC
+		LIMIT 50
+	`, orgID)
+	if err == nil {
+		data.Deployments, _ = scanDeployments(rowsD)
+		rowsD.Close()
+	}
+
+	return data, nil
+}
+
 func (r *Repository) ProjectStats(ctx context.Context, projectID, userID uuid.UUID) (*DashboardStats, error) {
 	if _, err := r.GetProject(ctx, projectID, userID); err != nil {
 		return nil, err

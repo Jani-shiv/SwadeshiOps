@@ -42,7 +42,7 @@ func New(cfg *config.Config, db *pgxpool.Pool, rdb *redis.Client, logger zerolog
 
 	// Initialize services
 	authRepo := auth.NewRepository(db)
-	s.authService = auth.NewService(authRepo, &cfg.JWT, logger)
+	s.authService = auth.NewService(authRepo, &cfg.JWT, &cfg.Supabase, logger)
 	appRepo := app.NewRepository(db)
 	var vault *crypto.Vault
 	if cfg.Encryption.Key != "" {
@@ -110,6 +110,7 @@ func (s *Server) registerAuthRoutes(rg *gin.RouterGroup) {
 	{
 		authGroup.POST("/register", authHandler.Register)
 		authGroup.POST("/login", authHandler.Login)
+		authGroup.POST("/sync", authHandler.Sync)
 	}
 
 	// Protected auth routes
@@ -162,9 +163,10 @@ func (s *Server) registerProtectedRoutes(rg *gin.RouterGroup) {
 		protected.POST("/projects/:projectId/envvars", appHandler.CreateEnvVar)
 		protected.GET("/projects/:projectId/envvars", appHandler.ListEnvVars)
 
-		// Dashboard Stats
+		// Dashboard Stats & Workspace Data
 		protected.GET("/orgs/:orgId/stats", appHandler.OrgStats)
 		protected.GET("/projects/:projectId/stats", appHandler.ProjectStats)
+		protected.GET("/orgs/:orgId/workspace", appHandler.GetWorkspaceData)
 	}
 
 	// Webhook routes (no auth — validated by HMAC signature)

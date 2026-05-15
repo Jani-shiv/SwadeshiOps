@@ -8,10 +8,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const syncUser = async (session: any) => {
+    if (!session?.user) return;
+    try {
+      await authAPI.sync({
+        id: session.user.id,
+        email: session.user.email || '',
+        full_name: session.user.user_metadata?.full_name,
+        username: session.user.user_metadata?.username,
+      });
+    } catch (err) {
+      console.error('Failed to sync user with backend', err);
+    }
+  };
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
-        // Create our own User object mapping from Supabase
         setUser({
           id: session.user.id,
           email: session.user.email || '',
@@ -23,6 +36,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           updated_at: session.user.updated_at || session.user.created_at,
         });
         localStorage.setItem('access_token', session.access_token);
+        syncUser(session);
       } else {
         setUser(null);
         localStorage.removeItem('access_token');
@@ -30,7 +44,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(false);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (session?.user) {
         setUser({
           id: session.user.id,
@@ -43,6 +57,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           updated_at: session.user.updated_at || session.user.created_at,
         });
         localStorage.setItem('access_token', session.access_token);
+        if (event === 'SIGNED_IN') {
+          syncUser(session);
+        }
       } else {
         setUser(null);
         localStorage.removeItem('access_token');

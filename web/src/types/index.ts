@@ -138,3 +138,14 @@ export interface EnvVar {
   created_at: string;
   updated_at: string;
 }
+
+export interface WorkspaceData {
+  orgs: Organization[];
+  projects: Project[];
+  pipelines: Pipeline[];
+  runs: PipelineRun[];
+  deployments: Deployment[];
+  secrets: Secret[];
+  env_vars: EnvVar[];
+  stats?: DashboardStats;
+}

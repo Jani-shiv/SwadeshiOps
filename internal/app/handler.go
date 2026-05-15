@@ -294,6 +294,15 @@ func (h *Handler) OrgStats(c *gin.Context) {
 	writeResult(c, http.StatusOK, stats, err)
 }
 
+func (h *Handler) GetWorkspaceData(c *gin.Context) {
+	orgID, ok := parseID(c, "orgId")
+	if !ok {
+		return
+	}
+	data, err := h.repo.GetWorkspaceData(c.Request.Context(), orgID, currentUserID(c))
+	writeResult(c, http.StatusOK, data, err)
+}
+
 func (h *Handler) ProjectStats(c *gin.Context) {
 	projectID, ok := parseID(c, "projectId")
 	if !ok {
