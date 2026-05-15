@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../store/useAuth';
-import { Eye, EyeOff, ArrowRight, Zap, Shield, Globe, Server, GitBranch, Lock, ExternalLink } from 'lucide-react';
+import { Eye, EyeOff, ArrowRight, Zap, Shield, GitBranch, Lock, ExternalLink, LayoutDashboard, Rocket, CheckCircle2 } from 'lucide-react';
 
 export default function LoginPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -39,248 +39,213 @@ export default function LoginPage() {
   };
 
   return (
-    <div
-      className="min-h-screen flex relative overflow-hidden noise-overlay"
-      style={{ background: '#050A15' }}
-    >
-      {/* Ambient gradient mesh — more vibrant */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div
-          className="absolute top-[10%] left-[5%] w-[600px] h-[600px] rounded-full opacity-[0.08] blur-[120px] animate-float"
-          style={{ background: 'radial-gradient(circle, #FF6B2B, transparent)', animationDuration: '8s' }}
-        />
-        <div
-          className="absolute bottom-[5%] right-[10%] w-[500px] h-[500px] rounded-full opacity-[0.06] blur-[100px] animate-float"
-          style={{ background: 'radial-gradient(circle, #2563EB, transparent)', animationDelay: '3s', animationDuration: '10s' }}
-        />
-        <div
-          className="absolute top-[55%] left-[45%] w-[350px] h-[350px] rounded-full opacity-[0.04] blur-[80px] animate-float"
-          style={{ background: 'radial-gradient(circle, #A855F7, transparent)', animationDelay: '5s', animationDuration: '12s' }}
-        />
-      </div>
+    <div className="relative min-h-screen overflow-hidden noise-overlay">
+      <div className="mesh-gradient" />
 
-      {/* Left Panel — Branding */}
-      <div className="hidden lg:flex lg:w-1/2 flex-col justify-center items-center relative z-10">
-        <div className="max-w-lg px-10">
-          <div
-            className="w-16 h-16 rounded-2xl flex items-center justify-center mb-8 animate-float"
-            style={{
-              background: 'linear-gradient(135deg, #FF6B2B, #FF8F5E)',
-              boxShadow: '0 0 60px rgba(255, 107, 43, 0.3), 0 0 120px rgba(255, 107, 43, 0.1)',
-            }}
-          >
-            <Zap size={28} className="text-white" />
+      <div className="relative z-10 grid min-h-screen lg:grid-cols-[1.15fr_0.85fr]">
+        <section className="hidden flex-col justify-between border-r border-[var(--color-border)] bg-[rgba(255,255,255,0.7)] p-10 lg:flex xl:p-14">
+          <div>
+            <div className="mb-8 inline-flex items-center gap-3 rounded-2xl border border-[var(--color-border)] bg-white/90 px-4 py-3 shadow-[0_10px_30px_rgba(66,16,44,0.12)] backdrop-blur-xl">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl" style={{ background: 'linear-gradient(135deg, #e06a2c, #c85b23)' }}>
+                <Zap size={22} className="text-white" />
+              </div>
+              <div>
+                <p className="text-[16px] font-extrabold tracking-tight text-slate-900">SwadeshiOps</p>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-500">DevOps platform</p>
+              </div>
+            </div>
+
+            <h1 className="max-w-xl text-5xl font-extrabold leading-[1.05] tracking-tight text-slate-900">
+              A cleaner control room for shipping software.
+            </h1>
+            <p className="mt-5 max-w-xl text-lg leading-8 text-slate-600">
+              One workspace for projects, pipelines, deployments, logs, and secrets, designed to feel fast, calm, and easy to scan.
+            </p>
+
+            <div className="mt-10 grid max-w-xl gap-4">
+              {[
+                { icon: LayoutDashboard, title: 'Single dashboard', text: 'Everything important in one place, without visual clutter.' },
+                { icon: Rocket, title: 'Faster decisions', text: 'Compact cards, clear states, and readable hierarchy.' },
+                { icon: CheckCircle2, title: 'Built for trust', text: 'Status, activity, and actions stay visible at every step.' },
+              ].map((item) => (
+                <div key={item.title} className="flex items-start gap-4 rounded-3xl border border-[var(--color-border)] bg-white/90 p-4 shadow-[0_10px_25px_rgba(66,16,44,0.12)] backdrop-blur-xl">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl" style={{ background: 'rgba(224,106,44,0.10)' }}>
+                    <item.icon size={19} style={{ color: 'var(--color-accent)' }} />
+                  </div>
+                  <div>
+                    <p className="text-[14px] font-bold text-slate-900">{item.title}</p>
+                    <p className="mt-1 text-sm leading-6 text-slate-600">{item.text}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
 
-          <h1 className="text-[46px] font-extrabold text-white mb-3 tracking-tight leading-[1.1]">
-            Swadeshi<span className="gradient-text">Ops</span>
-          </h1>
-          <p className="text-lg text-slate-400 mb-10 leading-relaxed font-medium">
-            India's open-source DevOps platform.<br />
-            Build, test, deploy — on your own terms.
-          </p>
-
-          <div className="space-y-4">
+          <div className="grid max-w-xl grid-cols-3 gap-4">
             {[
-              { icon: Server, text: 'CI/CD pipelines that run on a ₹500/mo VPS', color: '#FF6B2B' },
-              { icon: Shield, text: 'Self-hosted — your code stays with you', color: '#10B981' },
-              { icon: Globe, text: 'Built for Indian developers, by Indian developers', color: '#3B82F6' },
-            ].map((item, i) => (
-              <div
-                key={i}
-                className="flex items-center gap-4 animate-fade-in"
-                style={{ animationDelay: `${i * 150}ms` }}
-              >
-                <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                  style={{ background: `${item.color}12`, boxShadow: `0 0 12px ${item.color}08` }}
-                >
-                  <item.icon size={18} style={{ color: item.color }} />
-                </div>
-                <span className="text-[14px] text-slate-300 font-medium">{item.text}</span>
+              { value: '1.2K+', label: 'Runs tracked' },
+              { value: '99.9%', label: 'Availability' },
+              { value: '< 3s', label: 'Avg build time' },
+            ].map((stat) => (
+              <div key={stat.label} className="rounded-3xl border border-[var(--color-border)] bg-white/90 p-4 text-center shadow-[0_10px_25px_rgba(66,16,44,0.12)] backdrop-blur-xl">
+                <p className="text-xl font-extrabold tracking-tight text-slate-900">{stat.value}</p>
+                <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">{stat.label}</p>
               </div>
             ))}
           </div>
+        </section>
 
-          {/* Stats row */}
-          <div
-            className="mt-12 flex items-center gap-8 animate-fade-in"
-            style={{ animationDelay: '500ms' }}
-          >
-            {[
-              { value: '1.2K+', label: 'Pipelines Run' },
-              { value: '99.9%', label: 'Uptime' },
-              { value: '< 3s', label: 'Avg Build' },
-            ].map((stat, i) => (
-              <div key={i} className="text-center">
-                <p className="text-xl font-extrabold text-white stat-value">{stat.value}</p>
-                <p className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider mt-1">{stat.label}</p>
-              </div>
-            ))}
-          </div>
-
-          {/* Badge */}
-          <div
-            className="mt-8 inline-flex items-center gap-2 px-4 py-2 rounded-full text-[11px] font-semibold text-slate-400 animate-fade-in"
-            style={{
-              animationDelay: '700ms',
-              background: 'rgba(255,255,255,0.025)',
-              border: '1px solid rgba(255,255,255,0.05)',
-            }}
-          >
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            Open Source · MIT License · Forever Free
-          </div>
-        </div>
-      </div>
-
-      {/* Right Panel — Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center px-6 relative z-10">
-        <div className="w-full max-w-[440px]">
-          {/* Mobile Logo */}
-          <div className="lg:hidden flex items-center gap-3 mb-10">
-            <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center"
-              style={{ background: 'linear-gradient(135deg, #FF6B2B, #FF8F5E)' }}
-            >
-              <Zap size={20} className="text-white" />
-            </div>
-            <h1 className="text-2xl font-extrabold text-white">SwadeshiOps</h1>
-          </div>
-
-          <h2 className="text-[28px] font-extrabold text-white mb-1 tracking-tight">
-            {isLogin ? 'Welcome back' : 'Create your account'}
-          </h2>
-          <p className="text-slate-400 text-sm mb-8 font-medium">
-            {isLogin ? 'Sign in to your SwadeshiOps dashboard' : 'Get started with SwadeshiOps — free forever'}
-          </p>
-
-          {error && (
-            <div
-              className="mb-6 px-4 py-3 rounded-xl text-[12px] font-medium animate-fade-in flex items-center gap-2"
-              style={{ background: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.15)', color: '#EF4444' }}
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-red-400 shrink-0" />
-              {error}
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-5">
-            {!isLogin && (
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-[12px] font-bold text-slate-300 mb-2">Full Name</label>
-                  <input
-                    type="text"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl text-[13px] glass-input"
-                    placeholder="Shiv Jani"
-                    required
-                  />
+        <section className="flex items-center justify-center px-6 py-10 sm:px-8 lg:px-10">
+          <div className="w-full max-w-[460px]">
+            <div className="mb-8 lg:hidden">
+              <div className="mb-4 inline-flex items-center gap-3 rounded-2xl border border-[var(--color-border)] bg-white/90 px-4 py-3 shadow-[0_10px_30px_rgba(66,16,44,0.12)] backdrop-blur-xl">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl" style={{ background: 'linear-gradient(135deg, #e06a2c, #c85b23)' }}>
+                  <Zap size={20} className="text-white" />
                 </div>
                 <div>
-                  <label className="block text-[12px] font-bold text-slate-300 mb-2">Username</label>
-                  <input
-                    type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl text-[13px] glass-input"
-                    placeholder="shivjani"
-                    required
-                  />
+                  <p className="text-[15px] font-extrabold tracking-tight text-slate-900">SwadeshiOps</p>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-500">DevOps platform</p>
                 </div>
               </div>
-            )}
-
-            <div>
-              <label className="block text-[12px] font-bold text-slate-300 mb-2">Email</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl text-[13px] glass-input"
-                placeholder="you@company.com"
-                required
-              />
             </div>
 
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="text-[12px] font-bold text-slate-300">Password</label>
-                {isLogin && (
-                  <button type="button" className="text-[11px] font-semibold transition-colors hover:brightness-110" style={{ color: '#FF6B2B' }}>
-                    Forgot?
-                  </button>
+            <div className="rounded-[2rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.95)] p-6 shadow-[0_18px_50px_rgba(66,16,44,0.16)] backdrop-blur-xl sm:p-8">
+              <div className="mb-8 flex items-center justify-between">
+                <div>
+                  <h2 className="text-3xl font-extrabold tracking-tight text-slate-900">
+                    {isLogin ? 'Welcome back' : 'Create your account'}
+                  </h2>
+                  <p className="mt-2 text-sm leading-6 text-slate-600">
+                    {isLogin ? 'Sign in to continue to your dashboard.' : 'Set up your workspace in a few quick steps.'}
+                  </p>
+                </div>
+                <div className="hidden rounded-2xl bg-[rgba(224,106,44,0.10)] p-3 text-[color:var(--color-accent)] sm:block">
+                  <Shield size={18} />
+                </div>
+              </div>
+
+              {error && (
+                <div className="mb-5 flex items-center gap-2 rounded-2xl border border-[rgba(209,67,67,0.18)] bg-[rgba(209,67,67,0.08)] px-4 py-3 text-[12px] font-medium text-[var(--color-error)] animate-fade-in">
+                  <span className="h-2 w-2 shrink-0 rounded-full bg-[var(--color-error)]" />
+                  {error}
+                </div>
+              )}
+
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {!isLogin && (
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div>
+                      <label className="mb-2 block text-[12px] font-bold text-slate-700">Full Name</label>
+                      <input
+                        type="text"
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                        className="w-full rounded-2xl border border-[var(--color-border)] bg-white px-4 py-3 text-[13px] text-slate-900 outline-none transition focus:border-[var(--color-accent)] focus:ring-4 focus:ring-[rgba(224,106,44,0.12)]"
+                        placeholder="Shiv Jani"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="mb-2 block text-[12px] font-bold text-slate-700">Username</label>
+                      <input
+                        type="text"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        className="w-full rounded-2xl border border-[var(--color-border)] bg-white px-4 py-3 text-[13px] text-slate-900 outline-none transition focus:border-[var(--color-accent)] focus:ring-4 focus:ring-[rgba(224,106,44,0.12)]"
+                        placeholder="shivjani"
+                        required
+                      />
+                    </div>
+                  </div>
                 )}
-              </div>
-              <div className="relative">
-                <Lock size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-10 pr-12 py-3 rounded-xl text-[13px] glass-input"
-                  placeholder="••••••••"
-                  required
-                  minLength={8}
-                />
+
+                <div>
+                  <label className="mb-2 block text-[12px] font-bold text-slate-700">Email</label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full rounded-2xl border border-[var(--color-border)] bg-white px-4 py-3 text-[13px] text-slate-900 outline-none transition focus:border-[var(--color-accent)] focus:ring-4 focus:ring-[rgba(224,106,44,0.12)]"
+                    placeholder="you@company.com"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <div className="mb-2 flex items-center justify-between">
+                    <label className="text-[12px] font-bold text-slate-700">Password</label>
+                    {isLogin && (
+                      <button type="button" className="text-[11px] font-semibold text-[color:var(--color-accent)] transition hover:opacity-80">
+                        Forgot?
+                      </button>
+                    )}
+                  </div>
+                  <div className="relative">
+                    <Lock size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="w-full rounded-2xl border border-[var(--color-border)] bg-white py-3 pl-10 pr-12 text-[13px] text-slate-900 outline-none transition focus:border-[var(--color-accent)] focus:ring-4 focus:ring-[rgba(224,106,44,0.12)]"
+                      placeholder="••••••••"
+                      required
+                      minLength={8}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-1 text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
+                    >
+                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
+                </div>
+
                 <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors p-1 rounded"
+                  type="submit"
+                  disabled={loading}
+                  className="btn-primary flex w-full items-center justify-center gap-2 rounded-2xl py-3.5 text-[13px] font-bold disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  {loading ? (
+                    <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                  ) : (
+                    <>
+                      {isLogin ? 'Sign In' : 'Create Account'}
+                      <ArrowRight size={16} />
+                    </>
+                  )}
+                </button>
+              </form>
+
+              <div className="my-6 flex items-center gap-3">
+                <div className="h-px flex-1 bg-[rgba(24,22,18,0.08)]" />
+                <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">or continue with</span>
+                <div className="h-px flex-1 bg-[rgba(24,22,18,0.08)]" />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <button className="btn-secondary flex items-center justify-center gap-2 rounded-2xl py-3 text-[12px] font-bold">
+                  <ExternalLink size={16} />
+                  GitHub
+                </button>
+                <button className="btn-secondary flex items-center justify-center gap-2 rounded-2xl py-3 text-[12px] font-bold">
+                  <GitBranch size={16} />
+                  GitLab
                 </button>
               </div>
+
+              <p className="mt-8 text-center text-[13px] text-slate-500">
+                {isLogin ? "Don't have an account? " : 'Already have an account? '}
+                <button
+                  onClick={() => { setIsLogin(!isLogin); setError(''); }}
+                  className="font-bold text-[color:var(--color-accent)] transition hover:opacity-80"
+                >
+                  {isLogin ? 'Sign up free' : 'Sign in'}
+                </button>
+              </p>
             </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="btn-primary w-full flex items-center justify-center gap-2 py-3.5 rounded-xl text-[13px] font-bold disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-            >
-              {loading ? (
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              ) : (
-                <>
-                  {isLogin ? 'Sign In' : 'Create Account'}
-                  <ArrowRight size={16} />
-                </>
-              )}
-            </button>
-          </form>
-
-          {/* Divider */}
-          <div className="flex items-center gap-3 my-6">
-            <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.05)' }} />
-            <span className="text-[10px] text-slate-600 font-bold uppercase tracking-wider">or continue with</span>
-            <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.05)' }} />
           </div>
-
-          {/* Social Login */}
-          <div className="grid grid-cols-2 gap-3">
-            <button className="btn-secondary flex items-center justify-center gap-2 py-3 rounded-xl text-[12px] font-bold">
-              <ExternalLink size={16} />
-              GitHub
-            </button>
-            <button className="btn-secondary flex items-center justify-center gap-2 py-3 rounded-xl text-[12px] font-bold">
-              <GitBranch size={16} />
-              GitLab
-            </button>
-          </div>
-
-          <p className="mt-8 text-center text-[13px] text-slate-500">
-            {isLogin ? "Don't have an account? " : 'Already have an account? '}
-            <button
-              onClick={() => { setIsLogin(!isLogin); setError(''); }}
-              className="font-bold transition-colors hover:brightness-110"
-              style={{ color: '#FF6B2B' }}
-            >
-              {isLogin ? 'Sign up free' : 'Sign in'}
-            </button>
-          </p>
-        </div>
+        </section>
       </div>
     </div>
   );

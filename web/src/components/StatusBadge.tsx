@@ -6,15 +6,16 @@ interface StatusBadgeProps {
 }
 
 const statusConfig: Record<string, { bg: string; text: string; dot: string; label: string; glow: string }> = {
-  queued: { bg: 'rgba(245, 158, 11, 0.08)', text: '#F59E0B', dot: '#F59E0B', label: 'Queued', glow: 'rgba(245, 158, 11, 0.2)' },
-  running: { bg: 'rgba(59, 130, 246, 0.08)', text: '#3B82F6', dot: '#3B82F6', label: 'Running', glow: 'rgba(59, 130, 246, 0.3)' },
-  success: { bg: 'rgba(16, 185, 129, 0.08)', text: '#10B981', dot: '#10B981', label: 'Success', glow: 'rgba(16, 185, 129, 0.2)' },
-  failed: { bg: 'rgba(239, 68, 68, 0.08)', text: '#EF4444', dot: '#EF4444', label: 'Failed', glow: 'rgba(239, 68, 68, 0.2)' },
-  canceled: { bg: 'rgba(107, 114, 128, 0.08)', text: '#6B7280', dot: '#6B7280', label: 'Canceled', glow: 'rgba(107, 114, 128, 0.2)' },
-  timeout: { bg: 'rgba(168, 85, 247, 0.08)', text: '#A855F7', dot: '#A855F7', label: 'Timeout', glow: 'rgba(168, 85, 247, 0.2)' },
-  pending: { bg: 'rgba(245, 158, 11, 0.08)', text: '#F59E0B', dot: '#F59E0B', label: 'Pending', glow: 'rgba(245, 158, 11, 0.2)' },
-  deploying: { bg: 'rgba(59, 130, 246, 0.08)', text: '#3B82F6', dot: '#3B82F6', label: 'Deploying', glow: 'rgba(59, 130, 246, 0.3)' },
-  rolled_back: { bg: 'rgba(168, 85, 247, 0.08)', text: '#A855F7', dot: '#A855F7', label: 'Rolled Back', glow: 'rgba(168, 85, 247, 0.2)' },
+  queued: { bg: 'var(--color-warning-bg)', text: 'var(--color-warning)', dot: 'var(--color-warning)', label: 'Queued', glow: 'rgba(214, 138, 31, 0.2)' },
+  running: { bg: 'var(--color-info-bg)', text: 'var(--color-info)', dot: 'var(--color-info)', label: 'Running', glow: 'rgba(47, 110, 229, 0.25)' },
+  success: { bg: 'var(--color-success-bg)', text: 'var(--color-success)', dot: 'var(--color-success)', label: 'Success', glow: 'rgba(27, 139, 90, 0.2)' },
+  failed: { bg: 'var(--color-error-bg)', text: 'var(--color-error)', dot: 'var(--color-error)', label: 'Failed', glow: 'rgba(209, 67, 67, 0.2)' },
+  canceled: { bg: 'rgba(122, 117, 109, 0.12)', text: 'var(--color-slate-500)', dot: 'var(--color-slate-500)', label: 'Canceled', glow: 'rgba(122, 117, 109, 0.2)' },
+  cancelled: { bg: 'rgba(122, 117, 109, 0.12)', text: 'var(--color-slate-500)', dot: 'var(--color-slate-500)', label: 'Cancelled', glow: 'rgba(122, 117, 109, 0.2)' },
+  timeout: { bg: 'rgba(122, 117, 109, 0.12)', text: 'var(--color-slate-600)', dot: 'var(--color-slate-600)', label: 'Timeout', glow: 'rgba(122, 117, 109, 0.2)' },
+  pending: { bg: 'var(--color-warning-bg)', text: 'var(--color-warning)', dot: 'var(--color-warning)', label: 'Pending', glow: 'rgba(214, 138, 31, 0.2)' },
+  deploying: { bg: 'var(--color-info-bg)', text: 'var(--color-info)', dot: 'var(--color-info)', label: 'Deploying', glow: 'rgba(47, 110, 229, 0.25)' },
+  rolled_back: { bg: 'rgba(122, 117, 109, 0.12)', text: 'var(--color-slate-600)', dot: 'var(--color-slate-600)', label: 'Rolled Back', glow: 'rgba(122, 117, 109, 0.2)' },
 };
 
 export default function StatusBadge({ status, size = 'md' }: StatusBadgeProps) {
@@ -39,8 +40,9 @@ export default function StatusBadge({ status, size = 'md' }: StatusBadgeProps) {
       style={{
         background: config.bg,
         color: config.text,
-        border: `1px solid ${config.bg}`,
+        border: '1px solid rgba(24, 22, 18, 0.08)',
         letterSpacing: '0.04em',
+        boxShadow: `0 10px 18px ${config.glow}`,
       }}
     >
       <span

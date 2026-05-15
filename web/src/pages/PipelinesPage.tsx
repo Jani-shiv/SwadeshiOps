@@ -1,231 +1,240 @@
-import { GitBranch, ExternalLink, Clock, Play, MoreHorizontal, Plus, Zap, CheckCircle2, XCircle, Loader2, Filter } from 'lucide-react';
-import StatusBadge from '../components/StatusBadge';
-import { useState } from 'react';
+import { Activity, Calendar, GitBranch, PlayCircle, Search, Settings2, ShieldCheck, Sparkles, TimerReset } from 'lucide-react';
+import type { Pipeline } from '../types';
 
-const pipelines = [
+const pipelines: (Pipeline & { successRate: string; avgRuntime: string; statusText: string; runs: number; owner: string })[] = [
   {
-    id: '1', name: 'Node.js App CI/CD', project: 'swadeshiops-web', branch: 'main',
-    lastRun: { status: 'success' as const, number: 42, duration: '2m 30s', time: '5 min ago' },
-    totalRuns: 156, successRate: 94,
-    steps: [
-      { name: 'Install', status: 'success', duration: '7.1s' },
-      { name: 'Lint', status: 'success', duration: '4.2s' },
-      { name: 'Test', status: 'success', duration: '2.7s' },
-      { name: 'Build', status: 'success', duration: '3.1s' },
-      { name: 'Deploy', status: 'success', duration: '45s' },
-    ],
+    id: '1',
+    project_id: '1',
+    name: 'Build and test',
+    config_yaml: '.github/workflows/build.yml',
+    trigger_type: 'push',
+    trigger_branch: 'main',
+    is_active: true,
+    created_at: '2026-04-02T11:00:00Z',
+    updated_at: '2026-05-13T10:45:00Z',
+    successRate: '96%',
+    avgRuntime: '2m 05s',
+    statusText: 'Active',
+    runs: 84,
+    owner: 'Platform team',
   },
   {
-    id: '2', name: 'API Backend Pipeline', project: 'swadeshiops-api', branch: 'main',
-    lastRun: { status: 'running' as const, number: 87, duration: '—', time: 'now' },
-    totalRuns: 312, successRate: 97,
-    steps: [
-      { name: 'Build', status: 'success', duration: '12s' },
-      { name: 'Test', status: 'success', duration: '8s' },
-      { name: 'Lint', status: 'running', duration: '—' },
-      { name: 'Docker', status: 'pending', duration: '—' },
-      { name: 'Deploy', status: 'pending', duration: '—' },
-    ],
+    id: '2',
+    project_id: '1',
+    name: 'Preview deploy',
+    config_yaml: '.github/workflows/preview.yml',
+    trigger_type: 'pull_request',
+    trigger_branch: 'develop',
+    is_active: true,
+    created_at: '2026-04-06T09:20:00Z',
+    updated_at: '2026-05-13T09:15:00Z',
+    successRate: '93%',
+    avgRuntime: '3m 12s',
+    statusText: 'Active',
+    runs: 38,
+    owner: 'Frontend team',
   },
   {
-    id: '3', name: 'Mobile App Build', project: 'swadeshiops-mobile', branch: 'develop',
-    lastRun: { status: 'failed' as const, number: 23, duration: '1m 45s', time: '1 hour ago' },
-    totalRuns: 78, successRate: 88,
-    steps: [
-      { name: 'Install', status: 'success', duration: '15s' },
-      { name: 'Test', status: 'failed', duration: '32s' },
-      { name: 'Build', status: 'skipped', duration: '—' },
-    ],
+    id: '3',
+    project_id: '2',
+    name: 'Release candidate',
+    config_yaml: 'ops/release.yml',
+    trigger_type: 'tag',
+    trigger_branch: 'release',
+    is_active: false,
+    created_at: '2026-03-22T16:40:00Z',
+    updated_at: '2026-05-11T15:35:00Z',
+    successRate: '88%',
+    avgRuntime: '4m 40s',
+    statusText: 'Paused',
+    runs: 24,
+    owner: 'Release manager',
   },
   {
-    id: '4', name: 'Docker Image Build', project: 'swadeshiops-infra', branch: 'main',
-    lastRun: { status: 'success' as const, number: 64, duration: '4m 12s', time: '3 hours ago' },
-    totalRuns: 201, successRate: 96,
-    steps: [
-      { name: 'Build', status: 'success', duration: '3m' },
-      { name: 'Push', status: 'success', duration: '45s' },
-      { name: 'Scan', status: 'success', duration: '27s' },
-    ],
+    id: '4',
+    project_id: '3',
+    name: 'Security scan',
+    config_yaml: 'security/scan.yml',
+    trigger_type: 'schedule',
+    trigger_branch: 'main',
+    is_active: true,
+    created_at: '2026-04-18T08:30:00Z',
+    updated_at: '2026-05-12T19:00:00Z',
+    successRate: '99%',
+    avgRuntime: '1m 40s',
+    statusText: 'Active',
+    runs: 122,
+    owner: 'Security team',
   },
 ];
 
-function getSuccessColor(rate: number) {
-  if (rate >= 95) return '#10B981';
-  if (rate >= 90) return '#F59E0B';
-  return '#EF4444';
-}
-
-function StepDot({ status }: { status: string }) {
-  if (status === 'success') return <CheckCircle2 size={11} className="text-emerald-400" />;
-  if (status === 'failed') return <XCircle size={11} className="text-red-400" />;
-  if (status === 'running') return <Loader2 size={11} className="text-blue-400 animate-spin" />;
-  return <div className="w-2.5 h-2.5 rounded-full" style={{ background: 'rgba(255,255,255,0.1)' }} />;
-}
+const stats = [
+  { label: 'Total pipelines', value: '4', note: '2 active, 1 paused', icon: GitBranch, color: 'var(--color-accent)' },
+  { label: 'Success rate', value: '94%', note: 'Across last 30 runs', icon: ShieldCheck, color: 'var(--color-success)' },
+  { label: 'Avg runtime', value: '2m 54s', note: 'Stable trending', icon: TimerReset, color: 'var(--color-blue)' },
+];
 
 export default function PipelinesPage() {
-  const [activeFilter, setActiveFilter] = useState<string>('all');
-
-  const filteredPipelines = activeFilter === 'all'
-    ? pipelines
-    : pipelines.filter(p => p.lastRun.status === activeFilter);
-
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div className="flex items-center justify-between animate-fade-in">
+    <div className="page-shell">
+      <section className="page-header animate-fade-in">
         <div>
-          <h1 className="text-[30px] font-extrabold text-white tracking-tight">Pipelines</h1>
-          <p className="text-sm text-slate-400 mt-1 font-medium">
-            Manage and monitor your CI/CD pipelines
+          <div className="page-kicker" style={{ background: 'rgba(27,139,90,0.10)', color: 'var(--color-success)' }}>
+            <Sparkles size={12} />
+            Pipelines
+          </div>
+          <h1 className="page-title">Pipelines</h1>
+          <p className="page-subtitle">
+            A compact view of each workflow, how often it runs, and whether the current configuration is healthy.
           </p>
         </div>
-        <button className="btn-primary flex items-center gap-2 text-sm">
-          <Plus size={16} />
-          New Pipeline
-        </button>
-      </div>
 
-      {/* Filter Tabs */}
-      <div className="flex items-center gap-2 animate-fade-in" style={{ animationDelay: '80ms' }}>
-        <Filter size={13} className="text-slate-500" />
-        {[
-          { key: 'all', label: 'All', count: pipelines.length },
-          { key: 'running', label: 'Running', count: pipelines.filter(p => p.lastRun.status === 'running').length },
-          { key: 'success', label: 'Passed', count: pipelines.filter(p => p.lastRun.status === 'success').length },
-          { key: 'failed', label: 'Failed', count: pipelines.filter(p => p.lastRun.status === 'failed').length },
-        ].map(tab => (
-          <button
-            key={tab.key}
-            onClick={() => setActiveFilter(tab.key)}
-            className={`px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all ${
-              activeFilter === tab.key
-                ? 'text-white'
-                : 'text-slate-500 hover:text-slate-300 hover:bg-white/[0.03]'
-            }`}
-            style={activeFilter === tab.key ? {
-              background: 'rgba(255,107,43,0.1)',
-              border: '1px solid rgba(255,107,43,0.15)',
-            } : { border: '1px solid transparent' }}
-          >
-            {tab.label}
-            <span
-              className="ml-1.5 px-1.5 py-0.5 rounded-md text-[9px] font-bold"
-              style={{
-                background: activeFilter === tab.key ? 'rgba(255,107,43,0.15)' : 'rgba(255,255,255,0.04)',
-                color: activeFilter === tab.key ? '#FF8F5E' : 'inherit',
-              }}
-            >
-              {tab.count}
-            </span>
+        <div className="page-actions">
+          <div className="glass-card-flat flex items-center gap-2 rounded-2xl px-4 py-2 text-xs font-semibold text-slate-600">
+            <Calendar size={13} />
+            Synced just now
+          </div>
+          <button className="btn-primary flex items-center gap-2 rounded-2xl px-4 py-2.5 text-[13px] font-bold">
+            <PlayCircle size={15} />
+            Run pipeline
           </button>
-        ))}
-      </div>
+        </div>
+      </section>
 
-      {/* Pipeline Cards */}
-      <div className="space-y-4">
-        {filteredPipelines.map((pipeline, idx) => (
-          <div
-            key={pipeline.id}
-            className="glass-card rounded-2xl p-5 group animate-fade-in cursor-pointer"
-            style={{ animationDelay: `${idx * 80 + 120}ms` }}
-          >
-            <div className="flex items-center gap-5">
-              {/* Pipeline Icon */}
-              <div
-                className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110"
-                style={{ background: 'rgba(255, 107, 43, 0.08)' }}
-              >
-                <Zap size={18} style={{ color: '#FF6B2B' }} />
+      <section className="stat-grid">
+        {stats.map((stat) => (
+          <div key={stat.label} className="glass-card rounded-[1.75rem] p-5">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">{stat.label}</p>
+                <p className="mt-2 text-3xl font-extrabold tracking-tight text-slate-900">{stat.value}</p>
+                <p className="mt-2 text-sm text-slate-600">{stat.note}</p>
               </div>
-
-              {/* Pipeline Info */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-3 mb-2">
-                  <h3 className="text-[14px] font-bold text-white">{pipeline.name}</h3>
-                  <StatusBadge status={pipeline.lastRun.status} size="sm" />
-                </div>
-                <div className="flex items-center gap-3.5 text-[11px] text-slate-400">
-                  <span className="flex items-center gap-1.5 font-medium">
-                    <ExternalLink size={11} className="text-slate-500" />
-                    {pipeline.project}
-                  </span>
-                  <span className="flex items-center gap-1 font-mono text-[10px]">
-                    <GitBranch size={11} className="text-slate-500" />
-                    {pipeline.branch}
-                  </span>
-                  <span className="flex items-center gap-1 font-mono text-[10px]">
-                    <Clock size={11} className="text-slate-500" />
-                    {pipeline.lastRun.duration}
-                  </span>
-                  <span className="font-mono text-[10px]">Run #{pipeline.lastRun.number}</span>
-                  <span className="text-slate-500">{pipeline.lastRun.time}</span>
-                </div>
-
-                {/* Step Progress Timeline */}
-                <div className="flex items-center gap-1.5 mt-3">
-                  {pipeline.steps.map((step, si) => (
-                    <div key={si} className="flex items-center gap-1.5">
-                      <div className="flex items-center gap-1" data-tooltip={`${step.name}: ${step.duration}`}>
-                        <StepDot status={step.status} />
-                        <span className="text-[9px] font-semibold text-slate-500 hidden lg:inline">{step.name}</span>
-                      </div>
-                      {si < pipeline.steps.length - 1 && (
-                        <div
-                          className="w-5 h-px"
-                          style={{
-                            background: step.status === 'success'
-                              ? 'rgba(16,185,129,0.3)'
-                              : step.status === 'failed'
-                                ? 'rgba(239,68,68,0.3)'
-                                : 'rgba(255,255,255,0.06)',
-                          }}
-                        />
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Stats */}
-              <div className="hidden sm:flex items-center gap-6 shrink-0">
-                <div className="text-center">
-                  <p className="text-lg font-extrabold text-white stat-value">{pipeline.totalRuns}</p>
-                  <p className="text-[9px] text-slate-500 font-bold uppercase tracking-wider mt-0.5">Runs</p>
-                </div>
-                <div className="text-center">
-                  <div
-                    className="progress-ring mx-auto"
-                    style={{
-                      '--size': '44px',
-                      '--stroke': '3px',
-                      '--progress': pipeline.successRate,
-                      '--color': getSuccessColor(pipeline.successRate),
-                    } as React.CSSProperties}
-                  >
-                    <span className="text-[10px] font-extrabold" style={{ color: getSuccessColor(pipeline.successRate) }}>
-                      {pipeline.successRate}
-                    </span>
-                  </div>
-                  <p className="text-[9px] text-slate-500 font-bold uppercase tracking-wider mt-1">Rate</p>
-                </div>
-              </div>
-
-              {/* Actions */}
-              <div className="flex items-center gap-1 shrink-0">
-                <button
-                  className="p-2.5 rounded-xl transition-all hover:bg-white/[0.05] group/btn"
-                  title="Trigger Pipeline"
-                >
-                  <Play size={15} className="text-slate-500 group-hover/btn:text-emerald-400 transition-colors" />
-                </button>
-                <button className="p-2.5 rounded-xl transition-all hover:bg-white/[0.05]">
-                  <MoreHorizontal size={15} className="text-slate-500" />
-                </button>
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl" style={{ background: 'rgba(224,106,44,0.10)' }}>
+                <stat.icon size={18} style={{ color: stat.color }} />
               </div>
             </div>
           </div>
         ))}
-      </div>
+      </section>
+
+      <section className="split-grid">
+        <div className="glass-card overflow-hidden rounded-[2rem]">
+          <div className="flex flex-col gap-3 border-b border-[rgba(24,22,18,0.06)] px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+            <div>
+              <h2 className="text-[14px] font-bold text-slate-900">Pipeline library</h2>
+              <p className="text-[10px] font-medium text-slate-500">Triggers, branch rules, and runtime health</p>
+            </div>
+            <div className="glass-card-flat flex items-center gap-2 rounded-2xl px-3 py-2 text-xs text-slate-600">
+              <Search size={14} />
+              Search workflows
+            </div>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-left">
+              <thead className="border-b border-[rgba(24,22,18,0.06)] bg-[rgba(24,22,18,0.02)] text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">
+                <tr>
+                  <th className="px-5 py-4 sm:px-6">Pipeline</th>
+                  <th className="px-5 py-4">Trigger</th>
+                  <th className="px-5 py-4">Health</th>
+                  <th className="px-5 py-4">Runs</th>
+                  <th className="px-5 py-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {pipelines.map((pipeline) => (
+                  <tr key={pipeline.id} className="border-b border-[rgba(24,22,18,0.06)] transition hover:bg-black/5 last:border-b-0">
+                    <td className="px-5 py-5 sm:px-6">
+                      <div className="flex items-start gap-3">
+                        <div className={`flex h-10 w-10 items-center justify-center rounded-2xl ${pipeline.is_active ? 'bg-[rgba(27,139,90,0.12)]' : 'bg-[rgba(122,117,109,0.12)]'}`}>
+                          <GitBranch size={16} style={{ color: pipeline.is_active ? 'var(--color-success)' : 'var(--color-slate-500)' }} />
+                        </div>
+                        <div>
+                          <p className="text-[14px] font-bold text-slate-900">{pipeline.name}</p>
+                          <p className="mt-1 text-[12px] text-slate-500">{pipeline.config_yaml}</p>
+                          <p className="mt-1 text-[11px] font-medium text-slate-400">Owner: {pipeline.owner}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-5 py-5 text-[12px] text-slate-600">
+                      <div className="space-y-1">
+                        <p className="font-semibold text-slate-800">{pipeline.trigger_type}</p>
+                        <p className="text-slate-500">Branch {pipeline.trigger_branch}</p>
+                      </div>
+                    </td>
+                    <td className="px-5 py-5 text-[12px] text-slate-600">
+                      <div className="space-y-1">
+                        <p className="font-semibold text-slate-800">{pipeline.successRate} success</p>
+                        <p className="text-slate-500">{pipeline.avgRuntime} avg runtime</p>
+                      </div>
+                    </td>
+                    <td className="px-5 py-5 text-[12px] text-slate-600">
+                      <p className="font-semibold text-slate-800">{pipeline.runs} runs</p>
+                      <p className="mt-1 text-slate-500">{pipeline.is_active ? 'Active' : 'Paused'}</p>
+                    </td>
+                    <td className="px-5 py-5 text-right sm:px-6">
+                      <button className="inline-flex items-center gap-2 rounded-2xl px-3 py-2 text-[12px] font-bold text-[color:var(--color-accent)] transition hover:bg-black/5">
+                        Manage
+                        <Settings2 size={14} />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div className="space-y-5">
+          <div className="glass-card rounded-[2rem] p-5">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-[13px] font-bold text-slate-900">Activity status</h3>
+                <p className="text-[10px] font-medium text-slate-500">Pipeline execution mix</p>
+              </div>
+              <Activity size={15} className="text-slate-500" />
+            </div>
+
+            <div className="mt-4 space-y-3">
+              {[
+                { label: 'Push', value: '61%', width: '61%' },
+                { label: 'Pull request', value: '23%', width: '23%' },
+                { label: 'Schedule', value: '16%', width: '16%' },
+              ].map((item) => (
+                <div key={item.label}>
+                  <div className="mb-1 flex items-center justify-between text-[12px]">
+                    <span className="font-semibold text-slate-800">{item.label}</span>
+                    <span className="text-slate-500">{item.value}</span>
+                  </div>
+                  <div className="h-2 rounded-full bg-[rgba(24,22,18,0.06)]">
+                    <div className="h-2 rounded-full" style={{ width: item.width, background: 'linear-gradient(90deg, #e06a2c, #2f6ee5)' }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="glass-card rounded-[2rem] p-5">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-[13px] font-bold text-slate-900">Recommended next step</h3>
+                <p className="text-[10px] font-medium text-slate-500">Keep the workflow tidy</p>
+              </div>
+              <ShieldCheck size={15} className="text-slate-500" />
+            </div>
+
+            <p className="mt-3 text-sm leading-6 text-slate-600">
+              The release candidate pipeline is paused. Review the branch rule and re-enable it once the integration tests are green.
+            </p>
+
+            <button className="mt-4 inline-flex items-center gap-2 rounded-2xl bg-[rgba(27,139,90,0.10)] px-4 py-2.5 text-[12px] font-bold text-[var(--color-success)] transition hover:bg-[rgba(27,139,90,0.14)]">
+              <PlayCircle size={14} />
+              Resume workflow
+            </button>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

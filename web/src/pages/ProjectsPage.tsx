@@ -1,171 +1,249 @@
-import { Boxes, GitBranch, MoreHorizontal, Plus, ExternalLink, Star, Clock, CheckCircle2, Activity } from 'lucide-react';
+import { ArrowUpRight, Boxes, Calendar, GitBranch, Globe, Plus, Search, Sparkles, Users } from 'lucide-react';
+import type { Project } from '../types';
 
-const projects = [
+const projects: (Project & { health: 'healthy' | 'attention'; runs: number; members: number; summary: string; statusText: string })[] = [
   {
-    id: '1', name: 'SwadeshiOps Web', slug: 'swadeshiops-web',
-    description: 'React frontend dashboard with glassmorphic UI, real-time log streaming, and CI/CD integration',
-    repo_provider: 'github', branch: 'main', pipelines: 3, lastActivity: '5 min ago',
-    stars: 24, language: 'TypeScript', languageColor: '#3178C6',
-    health: 94, lastStatus: 'success' as const,
+    id: '1',
+    org_id: 'org-1',
+    name: 'Payments Gateway',
+    slug: 'payments-gateway',
+    description: 'Core checkout and billing services for the storefront.',
+    repo_url: 'github.com/swadeshiops/payments-gateway',
+    repo_provider: 'github',
+    repo_branch: 'main',
+    is_active: true,
+    created_at: '2026-04-01T10:00:00Z',
+    updated_at: '2026-05-13T18:22:00Z',
+    health: 'healthy',
+    runs: 138,
+    members: 5,
+    summary: 'Stable on main with fast approvals and clean build history.',
+    statusText: 'Healthy',
   },
   {
-    id: '2', name: 'SwadeshiOps API', slug: 'swadeshiops-api',
-    description: 'Go backend API with PostgreSQL, Redis caching, JWT auth, and webhook handlers',
-    repo_provider: 'github', branch: 'main', pipelines: 2, lastActivity: '1 hour ago',
-    stars: 18, language: 'Go', languageColor: '#00ADD8',
-    health: 97, lastStatus: 'success' as const,
+    id: '2',
+    org_id: 'org-1',
+    name: 'Developer Portal',
+    slug: 'developer-portal',
+    description: 'Internal dashboard for docs, onboarding, and support.',
+    repo_url: 'github.com/swadeshiops/developer-portal',
+    repo_provider: 'github',
+    repo_branch: 'develop',
+    is_active: true,
+    created_at: '2026-04-15T09:20:00Z',
+    updated_at: '2026-05-13T12:05:00Z',
+    health: 'healthy',
+    runs: 94,
+    members: 4,
+    summary: 'Monitored deployments and a steady release cadence.',
+    statusText: 'Healthy',
   },
   {
-    id: '3', name: 'E-Commerce Store', slug: 'ecommerce-store',
-    description: 'Full-stack Next.js e-commerce with Stripe payments, inventory, and order management',
-    repo_provider: 'gitlab', branch: 'develop', pipelines: 4, lastActivity: '3 hours ago',
-    stars: 42, language: 'JavaScript', languageColor: '#F7DF1E',
-    health: 88, lastStatus: 'failed' as const,
+    id: '3',
+    org_id: 'org-1',
+    name: 'Mobile API',
+    slug: 'mobile-api',
+    description: 'Public API serving mobile app sessions and sync.',
+    repo_url: 'github.com/swadeshiops/mobile-api',
+    repo_provider: 'gitlab',
+    repo_branch: 'release',
+    is_active: false,
+    created_at: '2026-03-18T14:10:00Z',
+    updated_at: '2026-05-11T17:45:00Z',
+    health: 'attention',
+    runs: 61,
+    members: 3,
+    summary: 'Needs branch cleanup and one failing integration job.',
+    statusText: 'Needs attention',
   },
   {
-    id: '4', name: 'Mobile App', slug: 'mobile-app',
-    description: 'React Native cross-platform mobile app with offline-first architecture',
-    repo_provider: 'github', branch: 'main', pipelines: 1, lastActivity: '1 day ago',
-    stars: 8, language: 'TypeScript', languageColor: '#3178C6',
-    health: 100, lastStatus: 'success' as const,
+    id: '4',
+    org_id: 'org-1',
+    name: 'Infrastructure',
+    slug: 'infrastructure',
+    description: 'Terraform and release automation for core environments.',
+    repo_url: 'github.com/swadeshiops/infrastructure',
+    repo_provider: 'github',
+    repo_branch: 'main',
+    is_active: true,
+    created_at: '2026-03-02T08:40:00Z',
+    updated_at: '2026-05-12T20:30:00Z',
+    health: 'healthy',
+    runs: 52,
+    members: 2,
+    summary: 'Small team, clean ownership, predictable delivery.',
+    statusText: 'Healthy',
   },
 ];
 
-const providerConfig: Record<string, { color: string; label: string }> = {
-  github: { color: '#8B5CF6', label: 'GitHub' },
-  gitlab: { color: '#FC6D26', label: 'GitLab' },
-  gitea: { color: '#609926', label: 'Gitea' },
-};
+const topStats = [
+  { label: 'Projects', value: '4', note: '2 active releases', icon: Boxes, color: 'var(--color-accent)' },
+  { label: 'Contributors', value: '14', note: 'Across all repos', icon: Users, color: 'var(--color-teal)' },
+  { label: 'Builds this week', value: '285', note: '94% green', icon: GitBranch, color: 'var(--color-blue)' },
+];
 
-function getHealthColor(h: number) {
-  if (h >= 95) return '#10B981';
-  if (h >= 90) return '#F59E0B';
-  return '#EF4444';
+function statTone(health: 'healthy' | 'attention') {
+  return health === 'healthy'
+    ? { bg: 'rgba(27,139,90,0.12)', text: 'var(--color-success)' }
+    : { bg: 'rgba(214,138,31,0.12)', text: 'var(--color-warning)' };
 }
 
 export default function ProjectsPage() {
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div className="flex items-center justify-between animate-fade-in">
+    <div className="page-shell">
+      <section className="page-header animate-fade-in">
         <div>
-          <h1 className="text-[30px] font-extrabold text-white tracking-tight">Projects</h1>
-          <p className="text-sm text-slate-400 mt-1 font-medium">
-            Manage connected repositories and CI/CD workflows
+          <div className="page-kicker" style={{ background: 'rgba(47,110,229,0.10)', color: 'var(--color-blue)' }}>
+            <Sparkles size={12} />
+            Workspace
+          </div>
+          <h1 className="page-title">Projects</h1>
+          <p className="page-subtitle">
+            A clean overview of each repository, its branch, current health, and how much activity it is carrying.
           </p>
         </div>
-        <div className="flex items-center gap-3">
-          <button className="btn-secondary flex items-center gap-2 text-sm">
-            <ExternalLink size={14} />
-            Import
-          </button>
-          <button className="btn-primary flex items-center gap-2 text-sm">
-            <Plus size={16} />
-            New Project
+
+        <div className="page-actions">
+          <div className="glass-card-flat flex items-center gap-2 rounded-2xl px-4 py-2 text-xs font-semibold text-slate-600">
+            <Calendar size={13} />
+            Updated today
+          </div>
+          <button className="btn-primary flex items-center gap-2 rounded-2xl px-4 py-2.5 text-[13px] font-bold">
+            <Plus size={15} />
+            New project
           </button>
         </div>
-      </div>
+      </section>
 
-      {/* Summary Bar */}
-      <div className="flex items-center gap-6 animate-fade-in" style={{ animationDelay: '80ms' }}>
-        {[
-          { label: 'Total', value: projects.length, color: '#FF6B2B' },
-          { label: 'Healthy', value: projects.filter(p => p.health >= 95).length, color: '#10B981' },
-          { label: 'Needs Attention', value: projects.filter(p => p.health < 90).length, color: '#EF4444' },
-        ].map(s => (
-          <div key={s.label} className="flex items-center gap-2 text-xs">
-            <span className="w-2 h-2 rounded-full" style={{ background: s.color, boxShadow: `0 0 6px ${s.color}40` }} />
-            <span className="text-slate-400 font-medium">{s.label}</span>
-            <span className="text-white font-bold">{s.value}</span>
-          </div>
-        ))}
-      </div>
-
-      {/* Project Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        {projects.map((p, i) => (
-          <div
-            key={p.id}
-            className="glass-card rounded-2xl p-6 group cursor-pointer animate-fade-in"
-            style={{ animationDelay: `${i * 80 + 100}ms` }}
-          >
-            {/* Top Row */}
-            <div className="flex items-start justify-between mb-3">
-              <div className="flex items-center gap-3">
-                <div
-                  className="w-11 h-11 rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
-                  style={{
-                    background: 'linear-gradient(135deg, rgba(255,107,43,0.14), rgba(255,107,43,0.04))',
-                  }}
-                >
-                  <Boxes size={20} style={{ color: '#FF6B2B' }} />
-                </div>
-                <div>
-                  <h3 className="text-[14px] font-bold text-white group-hover:text-slate-50 transition-colors">{p.name}</h3>
-                  <p className="text-[10px] text-slate-500 font-mono font-medium">{p.slug}</p>
-                </div>
+      <section className="stat-grid">
+        {topStats.map((stat) => (
+          <div key={stat.label} className="glass-card rounded-[1.75rem] p-5">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">{stat.label}</p>
+                <p className="mt-2 text-3xl font-extrabold tracking-tight text-slate-900">{stat.value}</p>
+                <p className="mt-2 text-sm text-slate-600">{stat.note}</p>
               </div>
-              <div className="flex items-center gap-1.5">
-                {/* Health ring */}
-                <div
-                  className="progress-ring"
-                  style={{
-                    '--size': '32px',
-                    '--stroke': '2.5px',
-                    '--progress': p.health,
-                    '--color': getHealthColor(p.health),
-                  } as React.CSSProperties}
-                >
-                  <span className="text-[8px] font-bold" style={{ color: getHealthColor(p.health) }}>{p.health}</span>
-                </div>
-                <button className="opacity-0 group-hover:opacity-100 p-2 rounded-lg hover:bg-white/[0.05] transition-all">
-                  <MoreHorizontal size={16} className="text-slate-400" />
-                </button>
-              </div>
-            </div>
-
-            {/* Description */}
-            <p className="text-[12px] text-slate-400 mb-4 leading-relaxed line-clamp-2">{p.description}</p>
-
-            {/* Language + Last pipeline */}
-            <div className="flex items-center gap-3 mb-4">
-              <span className="flex items-center gap-1.5 text-[11px] text-slate-400 font-medium">
-                <span className="w-2.5 h-2.5 rounded-full" style={{ background: p.languageColor }} />
-                {p.language}
-              </span>
-              <span className="flex items-center gap-1 text-[11px]" style={{ color: p.lastStatus === 'success' ? '#10B981' : '#EF4444' }}>
-                {p.lastStatus === 'success' ? <CheckCircle2 size={11} /> : <Activity size={11} />}
-                Last pipeline: {p.lastStatus}
-              </span>
-            </div>
-
-            {/* Footer */}
-            <div className="flex items-center justify-between pt-3" style={{ borderTop: '1px solid rgba(255,255,255,0.04)' }}>
-              <div className="flex items-center gap-3.5 text-[11px] text-slate-500">
-                <span className="flex items-center gap-1.5">
-                  <span
-                    className="w-2 h-2 rounded-full"
-                    style={{ background: providerConfig[p.repo_provider]?.color, boxShadow: `0 0 6px ${providerConfig[p.repo_provider]?.color}40` }}
-                  />
-                  <span className="font-medium">{providerConfig[p.repo_provider]?.label}</span>
-                </span>
-                <span className="flex items-center gap-1 font-mono text-[10px]">
-                  <GitBranch size={11} />
-                  {p.branch}
-                </span>
-                <span className="flex items-center gap-1">
-                  <Star size={10} />
-                  {p.stars}
-                </span>
-              </div>
-              <div className="flex items-center gap-1.5 text-[10px] text-slate-600 font-medium">
-                <Clock size={10} />
-                {p.lastActivity}
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl" style={{ background: 'rgba(224,106,44,0.10)' }}>
+                <stat.icon size={18} style={{ color: stat.color }} />
               </div>
             </div>
           </div>
         ))}
-      </div>
+      </section>
+
+      <section className="split-grid">
+        <div className="glass-card overflow-hidden rounded-[2rem]">
+          <div className="flex flex-col gap-3 border-b border-[rgba(24,22,18,0.06)] px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+            <div>
+              <h2 className="text-[14px] font-bold text-slate-900">Repository overview</h2>
+              <p className="text-[10px] font-medium text-slate-500">Branch, health, and recent run volume</p>
+            </div>
+            <div className="glass-card-flat flex items-center gap-2 rounded-2xl px-3 py-2 text-xs text-slate-600">
+              <Search size={14} />
+              Search projects
+            </div>
+          </div>
+
+          <div className="divide-y divide-[rgba(24,22,18,0.06)]">
+            {projects.map((project) => {
+              const tone = statTone(project.health);
+              return (
+                <article key={project.id} className="flex flex-col gap-4 px-5 py-5 transition hover:bg-black/5 sm:flex-row sm:items-center sm:px-6">
+                  <div className="flex items-start gap-4 min-w-0 flex-1">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl" style={{ background: project.health === 'healthy' ? 'rgba(27,139,90,0.12)' : 'rgba(214,138,31,0.12)' }}>
+                      <Boxes size={18} style={{ color: project.health === 'healthy' ? 'var(--color-success)' : 'var(--color-warning)' }} />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <h3 className="truncate text-[14px] font-bold text-slate-900">{project.name}</h3>
+                        <span className="rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em]" style={{ background: tone.bg, color: tone.text }}>
+                          {project.statusText}
+                        </span>
+                      </div>
+                      <p className="mt-1 text-sm leading-6 text-slate-600">{project.description}</p>
+                      <p className="mt-2 text-[12px] text-slate-500">{project.summary}</p>
+                    </div>
+                  </div>
+
+                  <div className="grid gap-3 text-left text-[11px] text-slate-500 sm:min-w-[240px] sm:text-right">
+                    <div>
+                      <span className="font-semibold uppercase tracking-[0.16em] text-slate-400">Branch</span>
+                      <p className="mt-1 font-semibold text-slate-800 font-mono">{project.repo_branch}</p>
+                    </div>
+                    <div>
+                      <span className="font-semibold uppercase tracking-[0.16em] text-slate-400">Runs</span>
+                      <p className="mt-1 font-semibold text-slate-800">{project.runs}</p>
+                    </div>
+                    <div>
+                      <span className="font-semibold uppercase tracking-[0.16em] text-slate-400">Contributors</span>
+                      <p className="mt-1 font-semibold text-slate-800">{project.members}</p>
+                    </div>
+                  </div>
+
+                  <button className="flex items-center gap-2 self-start rounded-2xl px-3 py-2 text-[12px] font-bold text-[color:var(--color-accent)] transition hover:bg-black/5 sm:self-center">
+                    Open
+                    <ArrowUpRight size={14} />
+                  </button>
+                </article>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="space-y-5">
+          <div className="glass-card rounded-[2rem] p-5">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-[13px] font-bold text-slate-900">Repository mix</h3>
+                <p className="text-[10px] font-medium text-slate-500">Provider and branch health</p>
+              </div>
+              <Globe size={15} className="text-slate-500" />
+            </div>
+
+            <div className="mt-4 space-y-3">
+              {[
+                { label: 'GitHub', value: '3 repos', width: '78%' },
+                { label: 'GitLab', value: '1 repo', width: '22%' },
+                { label: 'Default branch main', value: '2 repos', width: '64%' },
+              ].map((item) => (
+                <div key={item.label}>
+                  <div className="mb-1 flex items-center justify-between text-[12px]">
+                    <span className="font-semibold text-slate-800">{item.label}</span>
+                    <span className="text-slate-500">{item.value}</span>
+                  </div>
+                  <div className="h-2 rounded-full bg-[rgba(24,22,18,0.06)]">
+                    <div className="h-2 rounded-full" style={{ width: item.width, background: 'linear-gradient(90deg, #e06a2c, #1b6b5f)' }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="glass-card rounded-[2rem] p-5">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-[13px] font-bold text-slate-900">Recent activity</h3>
+                <p className="text-[10px] font-medium text-slate-500">Changes in the last 24 hours</p>
+              </div>
+              <Users size={15} className="text-slate-500" />
+            </div>
+
+            <div className="mt-4 space-y-3">
+              {[
+                'Branch protection updated for Payments Gateway.',
+                'Developer Portal added a new review rule.',
+                'Mobile API had one failed run on release branch.',
+              ].map((item, index) => (
+                <div key={item} className="rounded-2xl bg-[rgba(24,22,18,0.03)] px-4 py-3 text-sm leading-6 text-slate-700">
+                  <span className="mr-2 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">0{index + 1}</span>
+                  {item}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

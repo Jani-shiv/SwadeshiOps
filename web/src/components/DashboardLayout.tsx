@@ -17,28 +17,23 @@ export default function DashboardLayout() {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
   const meta = pageMeta[location.pathname] || pageMeta['/'];
+  const sidebarWidth = collapsed ? 88 : 268;
 
   return (
-    <div className="min-h-screen relative noise-overlay" style={{ background: 'var(--color-navy)' }}>
-      {/* Ambient gradient mesh */}
+    <div className="min-h-screen relative noise-overlay">
       <div className="mesh-gradient" />
-
-      {/* Sidebar */}
       <Sidebar collapsed={collapsed} onToggle={() => setCollapsed(!collapsed)} />
 
-      {/* Main Content */}
       <main
         className="relative z-10 transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]"
         style={{
-          marginLeft: collapsed ? 72 : 260,
+          marginLeft: sidebarWidth,
           minHeight: '100vh',
         }}
       >
-        {/* Top Bar */}
         <TopBar breadcrumb={meta.breadcrumb} collapsed={collapsed} />
 
-        {/* Page Content */}
-        <div className="relative z-10 px-8 pb-10 pt-4">
+        <div className="relative z-10 mx-auto w-full max-w-[1480px] px-5 pb-10 pt-4 lg:px-8">
           <Outlet />
         </div>
       </main>

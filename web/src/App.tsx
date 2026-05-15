@@ -16,10 +16,13 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: '#0A1628' }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--color-sand)' }}>
         <div className="flex flex-col items-center gap-4">
-          <div className="w-10 h-10 border-3 border-white/10 border-t-orange-500 rounded-full animate-spin" />
-          <p className="text-sm text-slate-400">Loading SwadeshiOps...</p>
+          <div
+            className="w-10 h-10 border-3 border-slate-300 rounded-full animate-spin"
+            style={{ borderTopColor: 'var(--color-accent)' }}
+          />
+          <p className="text-sm text-slate-600">Loading SwadeshiOps...</p>
         </div>
       </div>
     );
