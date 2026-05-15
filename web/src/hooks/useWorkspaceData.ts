@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { orgsAPI } from '../services/api';
-import type { WorkspaceData, Organization } from '../types';
+import type { WorkspaceData } from '../types';
 
 const emptyWorkspace: WorkspaceData = {
   orgs: [],
