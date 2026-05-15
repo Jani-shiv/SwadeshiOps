@@ -234,7 +234,9 @@ func (r *Repository) TriggerPipeline(ctx context.Context, pipelineID, userID uui
 	if err != nil {
 		return nil, err
 	}
-	defer tx.Rollback(ctx)
+	defer func() {
+		_ = tx.Rollback(ctx)
+	}()
 	var runNumber int
 	err = tx.QueryRow(ctx, `SELECT COALESCE(MAX(run_number), 0) + 1 FROM pipeline_runs WHERE pipeline_id = $1`, pipelineID).Scan(&runNumber)
 	if err != nil {

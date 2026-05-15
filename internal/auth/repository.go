@@ -26,7 +26,9 @@ func (r *Repository) Create(ctx context.Context, user *User) error {
 	if err != nil {
 		return err
 	}
-	defer tx.Rollback(ctx)
+	defer func() {
+		_ = tx.Rollback(ctx)
+	}()
 
 	query := `
 		INSERT INTO users (email, username, password_hash, full_name, role, is_active)
