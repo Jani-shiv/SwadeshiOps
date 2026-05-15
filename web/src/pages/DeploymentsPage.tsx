@@ -71,8 +71,8 @@ const statCards = [
 ];
 
 function statusTone(status: Deployment['status']) {
-  if (status === 'success') return { bg: 'rgba(27,139,90,0.12)', text: 'var(--color-success)' };
-  if (status === 'deploying') return { bg: 'rgba(47,110,229,0.12)', text: 'var(--color-blue)' };
+  if (status === 'success') return { bg: 'var(--color-success-bg)', text: 'var(--color-success)' };
+  if (status === 'deploying') return { bg: 'var(--color-info-bg)', text: 'var(--color-blue)' };
   if (status === 'pending') return { bg: 'rgba(214,138,31,0.12)', text: 'var(--color-warning)' };
   return { bg: 'rgba(122,117,109,0.12)', text: 'var(--color-slate-500)' };
 }
@@ -93,11 +93,11 @@ export default function DeploymentsPage() {
         </div>
 
         <div className="page-actions">
-          <div className="glass-card-flat flex items-center gap-2 rounded-2xl px-4 py-2 text-xs font-semibold text-slate-600">
+          <div className="glass-card-flat flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold text-slate-400">
             <Globe size={13} />
             Multi-environment view
           </div>
-          <button className="btn-primary flex items-center gap-2 rounded-2xl px-4 py-2.5 text-[13px] font-bold">
+          <button className="btn-primary flex items-center gap-2 rounded-xl px-4 py-2.5 text-[14px] font-semibold tracking-tight">
             <ShieldCheck size={15} />
             Promote release
           </button>
@@ -106,14 +106,14 @@ export default function DeploymentsPage() {
 
       <section className="stat-grid">
         {statCards.map((stat) => (
-          <div key={stat.label} className="glass-card rounded-[1.75rem] p-5">
+          <div key={stat.label} className="glass-card rounded-xl p-5">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">{stat.label}</p>
-                <p className="mt-2 text-3xl font-extrabold tracking-tight text-slate-900">{stat.value}</p>
-                <p className="mt-2 text-sm text-slate-600">{stat.note}</p>
+                <p className="text-[12px] font-medium text-slate-400 text-slate-500">{stat.label}</p>
+                <p className="mt-2 text-[32px] font-semibold tracking-tight tracking-tight text-slate-50">{stat.value}</p>
+                <p className="mt-2 text-sm text-slate-400">{stat.note}</p>
               </div>
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl" style={{ background: 'rgba(224,106,44,0.10)' }}>
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl" style={{ background: 'var(--color-accent-soft)' }}>
                 <stat.icon size={18} style={{ color: stat.color }} />
               </div>
             </div>
@@ -122,19 +122,19 @@ export default function DeploymentsPage() {
       </section>
 
       <section className="split-grid">
-        <div className="glass-card overflow-hidden rounded-[2rem]">
-          <div className="border-b border-[rgba(24,22,18,0.06)] px-5 py-4 sm:px-6">
-            <h2 className="text-[14px] font-bold text-slate-900">Environment timeline</h2>
-            <p className="text-[10px] font-medium text-slate-500">Current state across production, staging, preview, and sandbox</p>
+        <div className="glass-card overflow-hidden rounded-2xl">
+          <div className="border-b border-[rgba(255,255,255,0.08)] px-5 py-4 sm:px-6">
+            <h2 className="text-[15px] font-semibold tracking-tight text-slate-50">Environment timeline</h2>
+            <p className="text-[12px] font-medium text-slate-400">Current state across production, staging, preview, and sandbox</p>
           </div>
 
-          <div className="divide-y divide-[rgba(24,22,18,0.06)]">
+          <div className="divide-y divide-[rgba(255,255,255,0.08)]">
             {deployments.map((deployment) => {
               const tone = statusTone(deployment.status);
               return (
-                <article key={deployment.id} className="flex flex-col gap-4 px-5 py-5 transition hover:bg-black/5 sm:flex-row sm:items-center sm:px-6">
+                <article key={deployment.id} className="flex flex-col gap-4 px-5 py-5 transition hover:bg-white/5 sm:flex-row sm:items-center sm:px-6">
                   <div className="flex items-start gap-4 min-w-0 flex-1">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl" style={{ background: tone.bg }}>
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl" style={{ background: tone.bg }}>
                       {deployment.status === 'success' && <CheckCircle2 size={18} style={{ color: tone.text }} />}
                       {deployment.status === 'deploying' && <Rocket size={18} style={{ color: tone.text }} />}
                       {deployment.status === 'pending' && <Clock3 size={18} style={{ color: tone.text }} />}
@@ -142,12 +142,12 @@ export default function DeploymentsPage() {
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
-                        <h3 className="truncate text-[14px] font-bold text-slate-900">{deployment.environment}</h3>
+                        <h3 className="truncate text-[15px] font-semibold tracking-tight text-slate-50">{deployment.environment}</h3>
                         <span className="rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em]" style={{ background: tone.bg, color: tone.text }}>
                           {deployment.label}
                         </span>
                       </div>
-                      <p className="mt-1 text-sm leading-6 text-slate-600">{deployment.note}</p>
+                      <p className="mt-1 text-sm leading-6 text-slate-400">{deployment.note}</p>
                       <div className="mt-2 flex flex-wrap items-center gap-3 text-[12px] text-slate-500">
                         <span className="font-mono">{deployment.target_host}</span>
                         <span>{deployment.deploy_type}</span>
@@ -159,19 +159,19 @@ export default function DeploymentsPage() {
                   <div className="grid gap-3 text-left text-[11px] text-slate-500 sm:min-w-[230px] sm:text-right">
                     <div>
                       <span className="font-semibold uppercase tracking-[0.16em] text-slate-400">Target</span>
-                      <p className="mt-1 font-semibold text-slate-800 font-mono">{deployment.target}</p>
+                      <p className="mt-1 font-semibold text-slate-100 font-mono">{deployment.target}</p>
                     </div>
                     <div>
                       <span className="font-semibold uppercase tracking-[0.16em] text-slate-400">Status</span>
-                      <p className="mt-1 font-semibold text-slate-800">{deployment.status}</p>
+                      <p className="mt-1 font-semibold text-slate-100">{deployment.status}</p>
                     </div>
                     <div>
                       <span className="font-semibold uppercase tracking-[0.16em] text-slate-400">Started</span>
-                      <p className="mt-1 font-semibold text-slate-800">{deployment.started_at ? new Date(deployment.started_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : 'Queued'}</p>
+                      <p className="mt-1 font-semibold text-slate-100">{deployment.started_at ? new Date(deployment.started_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : 'Queued'}</p>
                     </div>
                   </div>
 
-                  <button className="flex items-center gap-2 self-start rounded-2xl px-3 py-2 text-[12px] font-bold text-[color:var(--color-accent)] transition hover:bg-black/5 sm:self-center">
+                  <button className="flex items-center gap-2 self-start rounded-xl px-3 py-2 text-[13px] font-medium text-[color:var(--color-accent)] transition hover:bg-white/5 sm:self-center">
                     Review
                     <ArrowUpRight size={14} />
                   </button>
@@ -182,11 +182,11 @@ export default function DeploymentsPage() {
         </div>
 
         <div className="space-y-5">
-          <div className="glass-card rounded-[2rem] p-5">
+          <div className="glass-card rounded-2xl p-5">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-[13px] font-bold text-slate-900">Rollout strategy</h3>
-                <p className="text-[10px] font-medium text-slate-500">Healthy promotion path</p>
+                <h3 className="text-[14px] font-semibold tracking-tight text-slate-50">Rollout strategy</h3>
+                <p className="text-[12px] font-medium text-slate-400">Healthy promotion path</p>
               </div>
               <Server size={15} className="text-slate-500" />
             </div>
@@ -199,10 +199,10 @@ export default function DeploymentsPage() {
               ].map((item) => (
                 <div key={item.label}>
                   <div className="mb-1 flex items-center justify-between text-[12px]">
-                    <span className="font-semibold text-slate-800">{item.label}</span>
+                    <span className="font-semibold text-slate-100">{item.label}</span>
                     <span className="text-slate-500">{item.value}</span>
                   </div>
-                  <div className="h-2 rounded-full bg-[rgba(24,22,18,0.06)]">
+                  <div className="h-2 rounded-full bg-[rgba(255,255,255,0.08)]">
                     <div className="h-2 rounded-full" style={{ width: item.width, background: 'linear-gradient(90deg, #e06a2c, #1b6b5f)' }} />
                   </div>
                 </div>
@@ -210,20 +210,20 @@ export default function DeploymentsPage() {
             </div>
           </div>
 
-          <div className="glass-card rounded-[2rem] p-5">
+          <div className="glass-card rounded-2xl p-5">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-[13px] font-bold text-slate-900">Operational note</h3>
-                <p className="text-[10px] font-medium text-slate-500">What to do next</p>
+                <h3 className="text-[14px] font-semibold tracking-tight text-slate-50">Operational note</h3>
+                <p className="text-[12px] font-medium text-slate-400">What to do next</p>
               </div>
               <Activity size={15} className="text-slate-500" />
             </div>
 
-            <p className="mt-3 text-sm leading-6 text-slate-600">
+            <p className="mt-3 text-sm leading-6 text-slate-400">
               Staging is still deploying. Once the canary passes, promote the build to production and keep the rollback window visible.
             </p>
 
-            <button className="mt-4 inline-flex items-center gap-2 rounded-2xl bg-[rgba(47,110,229,0.10)] px-4 py-2.5 text-[12px] font-bold text-[var(--color-blue)] transition hover:bg-[rgba(47,110,229,0.14)]">
+            <button className="mt-4 inline-flex items-center gap-2 rounded-xl bg-[rgba(47,110,229,0.10)] px-4 py-2.5 text-[13px] font-medium text-[var(--color-blue)] transition hover:bg-[rgba(47,110,229,0.14)]">
               View details
               <ArrowUpRight size={14} />
             </button>
@@ -233,3 +233,7 @@ export default function DeploymentsPage() {
     </div>
   );
 }
+
+
+
+

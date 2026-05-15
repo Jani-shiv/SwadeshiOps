@@ -133,21 +133,21 @@ function timeAgo(dateStr: string) {
 
 function MetricCard({ metric, delay }: { metric: typeof metrics[number]; delay: number }) {
   return (
-    <div className="glass-card rounded-[1.75rem] p-5 animate-fade-in" style={{ animationDelay: `${delay}ms` }}>
+    <div className="glass-card rounded-xl p-5 animate-fade-in" style={{ animationDelay: `${delay}ms` }}>
       <div className="flex items-start justify-between gap-4">
-        <div className="flex h-11 w-11 items-center justify-center rounded-2xl" style={{ background: 'rgba(224,106,44,0.10)' }}>
+        <div className="flex h-11 w-11 items-center justify-center rounded-xl" style={{ background: 'var(--color-accent-soft)' }}>
           <metric.icon size={19} style={{ color: metric.color }} />
         </div>
         <Sparkline data={metric.spark} color={metric.color} />
       </div>
 
-      <p className="mt-4 text-[27px] font-extrabold tracking-tight text-slate-900 stat-value">{metric.value}</p>
-      <p className="mt-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">{metric.label}</p>
+      <p className="mt-3 text-[13px] font-medium text-slate-400">{metric.label}</p>
+      <p className="mt-1 text-[32px] font-semibold tracking-tight text-slate-50 stat-value">{metric.value}</p>
 
-      <div className="mt-4 flex items-center gap-1.5 border-t border-[rgba(24,22,18,0.06)] pt-3">
+      <div className="mt-4 flex items-center gap-1.5 border-t border-[rgba(255,255,255,0.08)] pt-3">
         {metric.trend === 'up' ? <TrendingUp size={12} style={{ color: metric.color }} /> : <TrendingDown size={12} style={{ color: metric.color }} />}
         <span className="text-[11px] font-bold" style={{ color: metric.color }}>{metric.change}</span>
-        <span className="ml-auto text-[10px] font-medium text-slate-500">vs last week</span>
+        <span className="ml-auto text-[12px] font-medium text-slate-400">vs last week</span>
       </div>
     </div>
   );
@@ -172,12 +172,12 @@ export default function DashboardPage() {
         </div>
 
         <div className="page-actions">
-          <div className="flex items-center gap-2 text-xs font-medium text-slate-600">
+          <div className="flex items-center gap-2 text-xs font-medium text-slate-400">
             <Calendar size={13} />
             <span>Today, {new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</span>
           </div>
           <div className="section-line h-6 w-px" />
-          <div className="glass-card-flat flex items-center gap-2 rounded-2xl px-4 py-2 text-xs font-semibold" style={{ color: 'var(--color-success)', borderColor: 'rgba(27, 139, 90, 0.18)' }}>
+          <div className="glass-card-flat flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold" style={{ color: 'var(--color-success)', borderColor: 'var(--color-success-bg)' }}>
             <Activity size={14} className="animate-pulse" />
             <span>All systems operational</span>
           </div>
@@ -191,39 +191,39 @@ export default function DashboardPage() {
       </section>
 
       <section className="split-grid-wide">
-        <div className="glass-card overflow-hidden rounded-[2rem] animate-fade-in" style={{ animationDelay: '250ms' }}>
-          <div className="flex flex-col gap-3 border-b border-[rgba(24,22,18,0.06)] px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+        <div className="glass-card overflow-hidden rounded-xl animate-fade-in" style={{ animationDelay: '250ms' }}>
+          <div className="flex flex-col gap-3 border-b border-[rgba(255,255,255,0.08)] px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl" style={{ background: 'var(--color-accent-soft)' }}>
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl" style={{ background: 'var(--color-accent-soft)' }}>
                 <Zap size={16} style={{ color: 'var(--color-accent)' }} />
               </div>
               <div>
-                <h2 className="text-[14px] font-bold text-slate-900">Recent pipeline runs</h2>
-                <p className="text-[10px] font-medium text-slate-500">Last 5 executions with current state</p>
+                <h2 className="text-[15px] font-semibold tracking-tight text-slate-50">Recent pipeline runs</h2>
+                <p className="text-[12px] font-medium text-slate-500">Last 5 executions with current state</p>
               </div>
             </div>
 
-            <button className="self-start rounded-xl px-3 py-1.5 text-[11px] font-bold text-[color:var(--color-accent)] transition hover:bg-black/5 sm:self-auto">
+            <button className="self-start rounded-xl px-3 py-1.5 text-[11px] font-bold text-[color:var(--color-accent)] transition hover:bg-white/5 sm:self-auto">
               View all →
             </button>
           </div>
 
-          <div className="divide-y divide-[rgba(24,22,18,0.06)]">
+          <div className="divide-y divide-[rgba(255,255,255,0.08)]">
             {mockRuns.map((run, index) => (
-              <div key={run.id} className="flex items-center gap-4 px-5 py-[18px] transition hover:bg-black/5 sm:px-6" style={{ animationDelay: `${index * 60 + 300}ms` }}>
+              <div key={run.id} className="flex items-center gap-4 px-5 py-[18px] transition hover:bg-white/5 sm:px-6" style={{ animationDelay: `${index * 60 + 300}ms` }}>
                 <div className="shrink-0">
                   {run.status === 'success' && (
-                    <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-[rgba(27,139,90,0.12)]">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--color-success-bg)]">
                       <CheckCircle2 size={16} style={{ color: 'var(--color-success)' }} />
                     </div>
                   )}
                   {run.status === 'failed' && (
-                    <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-[rgba(209,67,67,0.12)]">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--color-error-bg)]">
                       <Layers3 size={16} style={{ color: 'var(--color-error)' }} />
                     </div>
                   )}
                   {run.status === 'running' && (
-                    <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-[rgba(47,110,229,0.12)]">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--color-info-bg)]">
                       <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-blue-500/30 border-t-blue-500" />
                     </div>
                   )}
@@ -231,7 +231,7 @@ export default function DashboardPage() {
 
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="truncate text-[13px] font-semibold text-slate-900">{run.commit_message}</span>
+                    <span className="truncate text-[14px] font-medium text-slate-50">{run.commit_message}</span>
                     <StatusBadge status={run.status} size="sm" />
                   </div>
                   <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] font-mono text-slate-500">
@@ -246,7 +246,7 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="shrink-0 text-right">
-                  <p className="text-[12px] font-semibold text-slate-800 font-mono">{run.duration_ms > 0 ? formatDuration(run.duration_ms) : '—'}</p>
+                  <p className="text-[12px] font-semibold text-slate-100 font-mono">{run.duration_ms > 0 ? formatDuration(run.duration_ms) : '—'}</p>
                   <p className="mt-0.5 text-[10px] text-slate-500">{timeAgo(run.created_at)}</p>
                 </div>
               </div>
@@ -255,18 +255,18 @@ export default function DashboardPage() {
         </div>
 
         <div className="space-y-5">
-          <div className="glass-card rounded-[2rem] p-5 animate-fade-in" style={{ animationDelay: '320ms' }}>
+          <div className="glass-card rounded-xl p-5 animate-fade-in" style={{ animationDelay: '320ms' }}>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <BarChart3 size={15} style={{ color: 'var(--color-blue)' }} />
-                <h3 className="text-[13px] font-bold text-slate-900">Weekly activity</h3>
+                <h3 className="text-[14px] font-semibold tracking-tight text-slate-50">Weekly activity</h3>
               </div>
-              <span className="text-[10px] font-medium text-slate-500">Last 7 days</span>
+              <span className="text-[12px] font-medium text-slate-400">Last 7 days</span>
             </div>
 
             <div className="mt-4 flex h-28 items-end gap-2">
               {activityBars.map((value, index) => (
-                <div key={`${index}-${value}`} className="flex-1 rounded-2xl" style={{ height: `${value}%`, background: index === activityBars.length - 1 ? 'var(--color-accent)' : 'rgba(47,110,229,0.58)' }} />
+                <div key={`${index}-${value}`} className="flex-1 rounded-t-sm" style={{ height: `${value}%`, background: index === activityBars.length - 1 ? 'var(--color-accent)' : 'rgba(59,130,246,0.6)' }} />
               ))}
             </div>
 
@@ -277,13 +277,13 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="glass-card rounded-[2rem] p-5 animate-fade-in" style={{ animationDelay: '380ms' }}>
+          <div className="glass-card rounded-xl p-5 animate-fade-in" style={{ animationDelay: '380ms' }}>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Sparkles size={15} style={{ color: 'var(--color-accent)' }} />
-                <h3 className="text-[13px] font-bold text-slate-900">Quick actions</h3>
+                <h3 className="text-[14px] font-semibold tracking-tight text-slate-50">Quick actions</h3>
               </div>
-              <span className="text-[10px] font-medium text-slate-500">Shortcuts</span>
+              <span className="text-[12px] font-medium text-slate-400">Shortcuts</span>
             </div>
 
             <div className="mt-4 space-y-3">
@@ -292,13 +292,13 @@ export default function DashboardPage() {
                 { label: 'Create pipeline', desc: 'Define a workflow', icon: GitBranch, color: 'var(--color-blue)' },
                 { label: 'Add runner', desc: 'Scale self-hosted capacity', icon: Rocket, color: 'var(--color-teal)' },
               ].map((action) => (
-                <button key={action.label} className="glass-card-flat flex w-full items-center gap-3 rounded-2xl p-4 text-left transition hover:translate-y-[-1px] hover:shadow-[0_12px_24px_rgba(24,22,18,0.06)]">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl" style={{ background: `${action.color}14` }}>
+                <button key={action.label} className="glass-card-flat flex w-full items-center gap-3 rounded-xl p-4 text-left transition hover:translate-y-[-1px] hover:shadow-[0_12px_24px_rgba(255,255,255,0.08)]">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl" style={{ background: `${action.color}14` }}>
                     <action.icon size={18} style={{ color: action.color }} />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-[12px] font-bold text-slate-900">{action.label}</p>
-                    <p className="text-[10px] font-medium text-slate-500">{action.desc}</p>
+                    <p className="text-[13px] font-medium text-slate-50">{action.label}</p>
+                    <p className="text-[12px] font-normal text-slate-500">{action.desc}</p>
                   </div>
                   <ArrowUpRight size={14} className="text-slate-500" />
                 </button>
@@ -306,12 +306,12 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="glass-card rounded-[2rem] p-5 animate-fade-in" style={{ animationDelay: '440ms' }}>
+          <div className="glass-card rounded-xl p-5 animate-fade-in" style={{ animationDelay: '440ms' }}>
             <div className="flex items-center gap-2">
               <Users size={15} style={{ color: 'var(--color-success)' }} />
-              <h3 className="text-[13px] font-bold text-slate-900">Team pulse</h3>
+              <h3 className="text-[14px] font-semibold tracking-tight text-slate-50">Team pulse</h3>
             </div>
-            <p className="mt-3 text-sm leading-6 text-slate-600">
+            <p className="mt-3 text-sm leading-6 text-slate-400">
               3 active contributors, 2 deployments waiting, and 1 build currently running.
             </p>
             <div className="mt-4 grid grid-cols-3 gap-3">
@@ -320,9 +320,9 @@ export default function DashboardPage() {
                 { value: '2', label: 'Queued' },
                 { value: '1', label: 'Running' },
               ].map((item) => (
-                <div key={item.label} className="rounded-2xl bg-[rgba(24,22,18,0.03)] p-3 text-center">
-                  <p className="text-lg font-extrabold tracking-tight text-slate-900">{item.value}</p>
-                  <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">{item.label}</p>
+                <div key={item.label} className="rounded-xl bg-[rgba(255,255,255,0.04)] p-3 text-center">
+                  <p className="mt-1 text-[11px] font-medium text-slate-500">{item.label}</p>
+                  <p className="mt-1 text-[20px] font-semibold tracking-tight text-slate-50">{item.value}</p>
                 </div>
               ))}
             </div>
@@ -332,3 +332,6 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+
+

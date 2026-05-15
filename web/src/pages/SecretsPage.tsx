@@ -44,11 +44,11 @@ export default function SecretsPage() {
         </div>
 
         <div className="page-actions">
-          <div className="glass-card-flat flex items-center gap-2 rounded-2xl px-4 py-2 text-xs font-semibold text-slate-600">
+          <div className="glass-card-flat flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold text-slate-400">
             <Lock size={13} />
             Encrypted at rest
           </div>
-          <button className="btn-primary flex items-center gap-2 rounded-2xl px-4 py-2.5 text-[13px] font-bold">
+          <button className="btn-primary flex items-center gap-2 rounded-xl px-4 py-2.5 text-[14px] font-semibold tracking-tight">
             <Plus size={15} />
             Add secret
           </button>
@@ -57,14 +57,14 @@ export default function SecretsPage() {
 
       <section className="stat-grid">
         {groups.map((group) => (
-          <div key={group.title} className="glass-card rounded-[1.75rem] p-5">
+          <div key={group.title} className="glass-card rounded-xl p-5">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">{group.title}</p>
-                <p className="mt-2 text-3xl font-extrabold tracking-tight text-slate-900">{group.count}</p>
-                <p className="mt-2 text-sm text-slate-600">{group.note}</p>
+                <p className="text-[12px] font-medium text-slate-400 text-slate-500">{group.title}</p>
+                <p className="mt-2 text-[32px] font-semibold tracking-tight tracking-tight text-slate-50">{group.count}</p>
+                <p className="mt-2 text-sm text-slate-400">{group.note}</p>
               </div>
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl" style={{ background: group.safe ? 'rgba(27,139,90,0.12)' : 'rgba(214,138,31,0.12)' }}>
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl" style={{ background: group.safe ? 'var(--color-success-bg)' : 'rgba(214,138,31,0.12)' }}>
                 <Shield size={18} style={{ color: group.safe ? 'var(--color-success)' : 'var(--color-warning)' }} />
               </div>
             </div>
@@ -73,28 +73,28 @@ export default function SecretsPage() {
       </section>
 
       <section className="split-grid">
-        <div className="glass-card overflow-hidden rounded-[2rem]">
-          <div className="flex flex-col gap-3 border-b border-[rgba(24,22,18,0.06)] px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+        <div className="glass-card overflow-hidden rounded-2xl">
+          <div className="flex flex-col gap-3 border-b border-[rgba(255,255,255,0.08)] px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
             <div>
-              <h2 className="text-[14px] font-bold text-slate-900">Secret inventory</h2>
-              <p className="text-[10px] font-medium text-slate-500">Masked values and update timestamps</p>
+              <h2 className="text-[15px] font-semibold tracking-tight text-slate-50">Secret inventory</h2>
+              <p className="text-[12px] font-medium text-slate-400">Masked values and update timestamps</p>
             </div>
-            <div className="glass-card-flat flex items-center gap-2 rounded-2xl px-3 py-2 text-xs text-slate-600">
+            <div className="glass-card-flat flex items-center gap-2 rounded-xl px-3 py-2 text-xs text-slate-400">
               <Search size={14} />
               Search secret
             </div>
           </div>
 
-          <div className="divide-y divide-[rgba(24,22,18,0.06)]">
+          <div className="divide-y divide-[rgba(255,255,255,0.08)]">
             {secrets.map((secret) => (
-              <div key={secret.key} className="flex flex-col gap-4 px-5 py-5 transition hover:bg-black/5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+              <div key={secret.key} className="flex flex-col gap-4 px-5 py-5 transition hover:bg-white/5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
                 <div className="flex items-start gap-4 min-w-0 flex-1">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[rgba(24,22,18,0.04)]">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[rgba(24,22,18,0.04)]">
                     <KeyRound size={18} className="text-slate-500" />
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="truncate text-[14px] font-bold text-slate-900">{secret.key}</h3>
+                      <h3 className="truncate text-[15px] font-semibold tracking-tight text-slate-50">{secret.key}</h3>
                       <span className="rounded-full bg-[rgba(47,110,229,0.10)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--color-blue)]">
                         {secret.scope}
                       </span>
@@ -104,7 +104,7 @@ export default function SecretsPage() {
                   </div>
                 </div>
 
-                <button className="flex items-center gap-2 rounded-2xl px-3 py-2 text-[12px] font-bold text-[color:var(--color-accent)] transition hover:bg-black/5">
+                <button className="flex items-center gap-2 rounded-xl px-3 py-2 text-[13px] font-medium text-[color:var(--color-accent)] transition hover:bg-white/5">
                   Reveal
                   <Eye size={14} />
                 </button>
@@ -114,10 +114,10 @@ export default function SecretsPage() {
         </div>
 
         <div className="space-y-5">
-          <div className="glass-card rounded-[2rem] p-5">
+          <div className="glass-card rounded-2xl p-5">
             <div className="flex items-center gap-2">
               <Sparkles size={15} style={{ color: 'var(--color-accent)' }} />
-              <h3 className="text-[13px] font-bold text-slate-900">Security rules</h3>
+              <h3 className="text-[14px] font-semibold tracking-tight text-slate-50">Security rules</h3>
             </div>
             <div className="mt-4 space-y-3">
               {[
@@ -125,22 +125,22 @@ export default function SecretsPage() {
                 'Rotation reminders are enabled for production values.',
                 'Changes are logged and shown in the audit trail.',
               ].map((item) => (
-                <div key={item} className="rounded-2xl bg-[rgba(24,22,18,0.03)] px-4 py-3 text-sm leading-6 text-slate-700">
+                <div key={item} className="rounded-xl bg-[rgba(255,255,255,0.04)] px-4 py-3 text-sm leading-6 text-slate-300">
                   {item}
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="glass-card rounded-[2rem] p-5">
+          <div className="glass-card rounded-2xl p-5">
             <div className="flex items-center gap-2">
               <EyeOff size={15} className="text-slate-500" />
-              <h3 className="text-[13px] font-bold text-slate-900">Audit trail</h3>
+              <h3 className="text-[14px] font-semibold tracking-tight text-slate-50">Audit trail</h3>
             </div>
-            <p className="mt-3 text-sm leading-6 text-slate-600">
+            <p className="mt-3 text-sm leading-6 text-slate-400">
               Last secret update was performed by Shiv Jani and propagated to staging in under a minute.
             </p>
-            <button className="mt-4 inline-flex items-center gap-2 rounded-2xl bg-[rgba(209,67,67,0.10)] px-4 py-2.5 text-[12px] font-bold text-[var(--color-error)] transition hover:bg-[rgba(209,67,67,0.14)]">
+            <button className="mt-4 inline-flex items-center gap-2 rounded-xl bg-[rgba(209,67,67,0.10)] px-4 py-2.5 text-[13px] font-medium text-[var(--color-error)] transition hover:bg-[rgba(209,67,67,0.14)]">
               Rotate keys
             </button>
           </div>
@@ -149,3 +149,7 @@ export default function SecretsPage() {
     </div>
   );
 }
+
+
+
+

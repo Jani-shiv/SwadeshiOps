@@ -33,10 +33,13 @@ export default function DashboardLayout() {
       >
         <TopBar breadcrumb={meta.breadcrumb} collapsed={collapsed} />
 
-        <div className="relative z-10 mx-auto w-full max-w-[1480px] px-5 pb-10 pt-4 lg:px-8">
+        <div className="relative z-10 mx-auto w-full max-w-[1480px] px-6 pb-12 pt-6 lg:px-10 lg:pt-8">
           <Outlet />
         </div>
       </main>
     </div>
   );
 }
+
+
+

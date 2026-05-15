@@ -42,7 +42,7 @@ export default function SettingsPage() {
           </p>
         </div>
 
-        <button className="btn-primary flex items-center gap-2 rounded-2xl px-4 py-2.5 text-[13px] font-bold">
+        <button className="btn-primary flex items-center gap-2 rounded-xl px-4 py-2.5 text-[14px] font-semibold tracking-tight">
           <Save size={15} />
           Save changes
         </button>
@@ -51,17 +51,17 @@ export default function SettingsPage() {
       <section className="split-grid-balanced">
         <div className="space-y-5">
           {sections.map((section) => (
-            <div key={section.title} className="glass-card rounded-[2rem] p-5">
+            <div key={section.title} className="glass-card rounded-2xl p-5">
               <div className="flex items-start gap-4">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl" style={{ background: 'rgba(224,106,44,0.10)' }}>
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl" style={{ background: 'var(--color-accent-soft)' }}>
                   <section.icon size={18} style={{ color: 'var(--color-accent)' }} />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <h2 className="text-[14px] font-bold text-slate-900">{section.title}</h2>
-                  <p className="mt-1 text-sm text-slate-600">{section.description}</p>
+                  <h2 className="text-[15px] font-semibold tracking-tight text-slate-50">{section.title}</h2>
+                  <p className="mt-1 text-sm text-slate-400">{section.description}</p>
                   <div className="mt-4 grid gap-3 sm:grid-cols-3">
                     {section.items.map((item) => (
-                      <div key={item} className="rounded-2xl bg-[rgba(24,22,18,0.03)] px-4 py-3 text-sm font-medium text-slate-700">
+                      <div key={item} className="rounded-xl bg-[rgba(255,255,255,0.04)] px-4 py-3 text-sm font-medium text-slate-300">
                         {item}
                       </div>
                     ))}
@@ -73,12 +73,12 @@ export default function SettingsPage() {
         </div>
 
         <div className="space-y-5">
-          <div className="glass-card rounded-[2rem] p-5">
+          <div className="glass-card rounded-2xl p-5">
             <div className="flex items-center gap-2">
               <KeyRound size={15} className="text-slate-500" />
-              <h3 className="text-[13px] font-bold text-slate-900">Access policy</h3>
+              <h3 className="text-[14px] font-semibold tracking-tight text-slate-50">Access policy</h3>
             </div>
-            <p className="mt-3 text-sm leading-6 text-slate-600">
+            <p className="mt-3 text-sm leading-6 text-slate-400">
               Limit session duration, require trusted devices, and keep the admin surface small.
             </p>
             <div className="mt-4 space-y-3">
@@ -87,22 +87,22 @@ export default function SettingsPage() {
                 'Admin access is restricted to workspace owners.',
                 'Webhook signatures are verified for every request.',
               ].map((item) => (
-                <div key={item} className="rounded-2xl bg-[rgba(24,22,18,0.03)] px-4 py-3 text-sm leading-6 text-slate-700">
+                <div key={item} className="rounded-xl bg-[rgba(255,255,255,0.04)] px-4 py-3 text-sm leading-6 text-slate-300">
                   {item}
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="glass-card rounded-[2rem] p-5">
+          <div className="glass-card rounded-2xl p-5">
             <div className="flex items-center gap-2">
               <Database size={15} className="text-slate-500" />
-              <h3 className="text-[13px] font-bold text-slate-900">Workspace status</h3>
+              <h3 className="text-[14px] font-semibold tracking-tight text-slate-50">Workspace status</h3>
             </div>
-            <p className="mt-3 text-sm leading-6 text-slate-600">
+            <p className="mt-3 text-sm leading-6 text-slate-400">
               The platform is connected, monitored, and ready for deployment activity.
             </p>
-            <div className="mt-4 rounded-2xl bg-[rgba(27,139,90,0.10)] px-4 py-3 text-[12px] font-semibold text-[var(--color-success)]">
+            <div className="mt-4 rounded-xl bg-[rgba(27,139,90,0.10)] px-4 py-3 text-[12px] font-semibold text-[var(--color-success)]">
               All services are reachable and configuration is in sync.
             </div>
           </div>
@@ -111,3 +111,7 @@ export default function SettingsPage() {
     </div>
   );
 }
+
+
+
+
