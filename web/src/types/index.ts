@@ -11,6 +11,7 @@ export interface User {
   role: string;
   is_active: boolean;
   created_at: string;
+  updated_at?: string;
 }
 
 export interface TokenResponse {
@@ -146,6 +147,6 @@ export interface WorkspaceData {
   runs: PipelineRun[];
   deployments: Deployment[];
   secrets: Secret[];
-  env_vars: EnvVar[];
+  envVars: EnvVar[];
   stats?: DashboardStats;
 }

@@ -1,18 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { deploymentsAPI, envVarsAPI, orgsAPI, pipelinesAPI, projectsAPI, secretsAPI, statsAPI } from '../services/api';
-import type { Deployment, EnvVar, Organization, Pipeline, PipelineRun, Project, Secret, DashboardStats } from '../types';
-
-export interface WorkspaceData {
-  orgs: Organization[];
-  activeOrg?: Organization;
-  projects: Project[];
-  pipelines: Pipeline[];
-  runs: PipelineRun[];
-  deployments: Deployment[];
-  secrets: Secret[];
-  envVars: EnvVar[];
-  stats?: DashboardStats;
-}
+import { orgsAPI } from '../services/api';
+import type { WorkspaceData, Organization } from '../types';
 
 const emptyWorkspace: WorkspaceData = {
   orgs: [],

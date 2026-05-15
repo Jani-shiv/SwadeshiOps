@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { APIResponse, DashboardStats, Deployment, EnvVar, LoginResponse, Organization, Pipeline, PipelineRun, Project, Secret, User } from '../types';
+import type { APIResponse, DashboardStats, Deployment, EnvVar, LoginResponse, Organization, Pipeline, PipelineRun, Project, Secret, User, WorkspaceData } from '../types';
 
 const api = axios.create({
   baseURL: '/api/v1',
