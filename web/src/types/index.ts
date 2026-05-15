@@ -118,3 +118,23 @@ export interface DashboardStats {
   recent_runs: PipelineRun[];
   active_deployments: Deployment[];
 }
+
+export interface Secret {
+  id: string;
+  project_id: string;
+  name: string;
+  description?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface EnvVar {
+  id: string;
+  project_id: string;
+  name: string;
+  value?: string;
+  is_secret: boolean;
+  environment: string;
+  created_at: string;
+  updated_at: string;
+}

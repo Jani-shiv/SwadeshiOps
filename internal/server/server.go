@@ -8,8 +8,10 @@ import (
 	"github.com/redis/go-redis/v9"
 	"github.com/rs/zerolog"
 
+	"github.com/swadeshiops/swadeshiops/internal/app"
 	"github.com/swadeshiops/swadeshiops/internal/auth"
 	"github.com/swadeshiops/swadeshiops/internal/config"
+	"github.com/swadeshiops/swadeshiops/internal/pkg/crypto"
 	"github.com/swadeshiops/swadeshiops/internal/server/middleware"
 )
 
@@ -21,6 +23,7 @@ type Server struct {
 	logger      zerolog.Logger
 	router      *gin.Engine
 	authService *auth.Service
+	appHandler  *app.Handler
 }
 
 // New creates a new server with all dependencies wired
@@ -40,6 +43,16 @@ func New(cfg *config.Config, db *pgxpool.Pool, rdb *redis.Client, logger zerolog
 	// Initialize services
 	authRepo := auth.NewRepository(db)
 	s.authService = auth.NewService(authRepo, &cfg.JWT, logger)
+	appRepo := app.NewRepository(db)
+	var vault *crypto.Vault
+	if cfg.Encryption.Key != "" {
+		var err error
+		vault, err = crypto.NewVault(cfg.Encryption.Key)
+		if err != nil {
+			logger.Warn().Err(err).Msg("Secrets vault disabled because ENCRYPTION_KEY is invalid")
+		}
+	}
+	s.appHandler = app.NewHandler(appRepo, vault)
 
 	// Setup router
 	s.setupRouter()
@@ -108,49 +121,50 @@ func (s *Server) registerAuthRoutes(rg *gin.RouterGroup) {
 }
 
 func (s *Server) registerProtectedRoutes(rg *gin.RouterGroup) {
+	appHandler := s.appHandler
 	protected := rg.Group("")
 	protected.Use(middleware.Auth(s.authService))
 	{
 		// Organizations
-		protected.POST("/orgs", s.placeholderHandler("create_org"))
-		protected.GET("/orgs", s.placeholderHandler("list_orgs"))
-		protected.GET("/orgs/:orgId", s.placeholderHandler("get_org"))
-		protected.PUT("/orgs/:orgId", s.placeholderHandler("update_org"))
+		protected.POST("/orgs", appHandler.CreateOrganization)
+		protected.GET("/orgs", appHandler.ListOrganizations)
+		protected.GET("/orgs/:orgId", appHandler.GetOrganization)
+		protected.PUT("/orgs/:orgId", appHandler.UpdateOrganization)
 
 		// Projects
-		protected.POST("/orgs/:orgId/projects", s.placeholderHandler("create_project"))
-		protected.GET("/orgs/:orgId/projects", s.placeholderHandler("list_projects"))
-		protected.GET("/projects/:projectId", s.placeholderHandler("get_project"))
-		protected.PUT("/projects/:projectId", s.placeholderHandler("update_project"))
-		protected.DELETE("/projects/:projectId", s.placeholderHandler("delete_project"))
+		protected.POST("/orgs/:orgId/projects", appHandler.CreateProject)
+		protected.GET("/orgs/:orgId/projects", appHandler.ListProjects)
+		protected.GET("/projects/:projectId", appHandler.GetProject)
+		protected.PUT("/projects/:projectId", appHandler.UpdateProject)
+		protected.DELETE("/projects/:projectId", appHandler.DeleteProject)
 
 		// Pipelines
-		protected.POST("/projects/:projectId/pipelines", s.placeholderHandler("create_pipeline"))
-		protected.GET("/projects/:projectId/pipelines", s.placeholderHandler("list_pipelines"))
-		protected.GET("/pipelines/:pipelineId", s.placeholderHandler("get_pipeline"))
-		protected.POST("/pipelines/:pipelineId/trigger", s.placeholderHandler("trigger_pipeline"))
+		protected.POST("/projects/:projectId/pipelines", appHandler.CreatePipeline)
+		protected.GET("/projects/:projectId/pipelines", appHandler.ListPipelines)
+		protected.GET("/pipelines/:pipelineId", appHandler.GetPipeline)
+		protected.POST("/pipelines/:pipelineId/trigger", appHandler.TriggerPipeline)
 
 		// Pipeline Runs
-		protected.GET("/pipelines/:pipelineId/runs", s.placeholderHandler("list_runs"))
-		protected.GET("/runs/:runId", s.placeholderHandler("get_run"))
-		protected.POST("/runs/:runId/cancel", s.placeholderHandler("cancel_run"))
+		protected.GET("/pipelines/:pipelineId/runs", appHandler.ListRuns)
+		protected.GET("/runs/:runId", appHandler.GetRun)
+		protected.POST("/runs/:runId/cancel", appHandler.CancelRun)
 
 		// Deployments
-		protected.POST("/projects/:projectId/deployments", s.placeholderHandler("create_deployment"))
-		protected.GET("/projects/:projectId/deployments", s.placeholderHandler("list_deployments"))
+		protected.POST("/projects/:projectId/deployments", appHandler.CreateDeployment)
+		protected.GET("/projects/:projectId/deployments", appHandler.ListDeployments)
 
 		// Secrets
-		protected.POST("/projects/:projectId/secrets", s.placeholderHandler("create_secret"))
-		protected.GET("/projects/:projectId/secrets", s.placeholderHandler("list_secrets"))
-		protected.DELETE("/secrets/:secretId", s.placeholderHandler("delete_secret"))
+		protected.POST("/projects/:projectId/secrets", appHandler.CreateSecret)
+		protected.GET("/projects/:projectId/secrets", appHandler.ListSecrets)
+		protected.DELETE("/secrets/:secretId", appHandler.DeleteSecret)
 
 		// Env Vars
-		protected.POST("/projects/:projectId/envvars", s.placeholderHandler("create_envvar"))
-		protected.GET("/projects/:projectId/envvars", s.placeholderHandler("list_envvars"))
+		protected.POST("/projects/:projectId/envvars", appHandler.CreateEnvVar)
+		protected.GET("/projects/:projectId/envvars", appHandler.ListEnvVars)
 
 		// Dashboard Stats
-		protected.GET("/orgs/:orgId/stats", s.placeholderHandler("org_stats"))
-		protected.GET("/projects/:projectId/stats", s.placeholderHandler("project_stats"))
+		protected.GET("/orgs/:orgId/stats", appHandler.OrgStats)
+		protected.GET("/projects/:projectId/stats", appHandler.ProjectStats)
 	}
 
 	// Webhook routes (no auth — validated by HMAC signature)

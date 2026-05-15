@@ -1,94 +1,30 @@
 import { ArrowUpRight, Boxes, Calendar, GitBranch, Globe, Plus, Search, Sparkles, Users } from 'lucide-react';
+import { useWorkspaceData, timeAgo } from '../hooks/useWorkspaceData';
 import type { Project } from '../types';
 
-const projects: (Project & { health: 'healthy' | 'attention'; runs: number; members: number; summary: string; statusText: string })[] = [
-  {
-    id: '1',
-    org_id: 'org-1',
-    name: 'Payments Gateway',
-    slug: 'payments-gateway',
-    description: 'Core checkout and billing services for the storefront.',
-    repo_url: 'github.com/swadeshiops/payments-gateway',
-    repo_provider: 'github',
-    repo_branch: 'main',
-    is_active: true,
-    created_at: '2026-04-01T10:00:00Z',
-    updated_at: '2026-05-13T18:22:00Z',
-    health: 'healthy',
-    runs: 138,
-    members: 5,
-    summary: 'Stable on main with fast approvals and clean build history.',
-    statusText: 'Healthy',
-  },
-  {
-    id: '2',
-    org_id: 'org-1',
-    name: 'Developer Portal',
-    slug: 'developer-portal',
-    description: 'Internal dashboard for docs, onboarding, and support.',
-    repo_url: 'github.com/swadeshiops/developer-portal',
-    repo_provider: 'github',
-    repo_branch: 'develop',
-    is_active: true,
-    created_at: '2026-04-15T09:20:00Z',
-    updated_at: '2026-05-13T12:05:00Z',
-    health: 'healthy',
-    runs: 94,
-    members: 4,
-    summary: 'Monitored deployments and a steady release cadence.',
-    statusText: 'Healthy',
-  },
-  {
-    id: '3',
-    org_id: 'org-1',
-    name: 'Mobile API',
-    slug: 'mobile-api',
-    description: 'Public API serving mobile app sessions and sync.',
-    repo_url: 'github.com/swadeshiops/mobile-api',
-    repo_provider: 'gitlab',
-    repo_branch: 'release',
-    is_active: false,
-    created_at: '2026-03-18T14:10:00Z',
-    updated_at: '2026-05-11T17:45:00Z',
-    health: 'attention',
-    runs: 61,
-    members: 3,
-    summary: 'Needs branch cleanup and one failing integration job.',
-    statusText: 'Needs attention',
-  },
-  {
-    id: '4',
-    org_id: 'org-1',
-    name: 'Infrastructure',
-    slug: 'infrastructure',
-    description: 'Terraform and release automation for core environments.',
-    repo_url: 'github.com/swadeshiops/infrastructure',
-    repo_provider: 'github',
-    repo_branch: 'main',
-    is_active: true,
-    created_at: '2026-03-02T08:40:00Z',
-    updated_at: '2026-05-12T20:30:00Z',
-    health: 'healthy',
-    runs: 52,
-    members: 2,
-    summary: 'Small team, clean ownership, predictable delivery.',
-    statusText: 'Healthy',
-  },
-];
-
-const topStats = [
-  { label: 'Projects', value: '4', note: '2 active releases', icon: Boxes, color: 'var(--color-accent)' },
-  { label: 'Contributors', value: '14', note: 'Across all repos', icon: Users, color: 'var(--color-teal)' },
-  { label: 'Builds this week', value: '285', note: '94% green', icon: GitBranch, color: 'var(--color-blue)' },
-];
-
-function statTone(health: 'healthy' | 'attention') {
-  return health === 'healthy'
-    ? { bg: 'var(--color-success-bg)', text: 'var(--color-success)' }
-    : { bg: 'rgba(214,138,31,0.12)', text: 'var(--color-warning)' };
+function statTone(project: Project) {
+  return project.is_active
+    ? { bg: 'var(--color-success-bg)', text: 'var(--color-success)', label: 'Healthy' }
+    : { bg: 'rgba(214,138,31,0.12)', text: 'var(--color-warning)', label: 'Paused' };
 }
 
 export default function ProjectsPage() {
+  const { data, isLoading, isError } = useWorkspaceData();
+  const projects = data?.projects ?? [];
+  const activeProjects = projects.filter((project) => project.is_active).length;
+  const providers = projects.reduce<Record<string, number>>((acc, project) => {
+    const provider = project.repo_provider || 'Unknown';
+    acc[provider] = (acc[provider] ?? 0) + 1;
+    return acc;
+  }, {});
+  const mainBranches = projects.filter((project) => project.repo_branch === 'main').length;
+
+  const topStats = [
+    { label: 'Projects', value: String(projects.length), note: `${activeProjects} active`, icon: Boxes, color: 'var(--color-accent)' },
+    { label: 'Pipelines', value: String(data?.pipelines.length ?? 0), note: 'Connected workflows', icon: GitBranch, color: 'var(--color-blue)' },
+    { label: 'Runs tracked', value: String(data?.runs.length ?? 0), note: `${Math.round(data?.stats?.success_rate ?? 0)}% success`, icon: Users, color: 'var(--color-teal)' },
+  ];
+
   return (
     <div className="page-shell">
       <section className="page-header animate-fade-in">
@@ -98,15 +34,13 @@ export default function ProjectsPage() {
             Workspace
           </div>
           <h1 className="page-title">Projects</h1>
-          <p className="page-subtitle">
-            A clean overview of each repository, its branch, current health, and how much activity it is carrying.
-          </p>
+          <p className="page-subtitle">A live overview of each repository, its branch, current health, and deployment activity.</p>
         </div>
 
         <div className="page-actions">
           <div className="glass-card-flat flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold text-slate-600">
             <Calendar size={13} />
-            Updated today
+            {isLoading ? 'Syncing...' : 'Live data'}
           </div>
           <button className="btn-primary flex items-center gap-2 rounded-xl px-4 py-2.5 text-[14px] font-semibold tracking-tight">
             <Plus size={15} />
@@ -146,38 +80,45 @@ export default function ProjectsPage() {
           </div>
 
           <div className="divide-y divide-slate-200/80">
+            {isError && <div className="px-6 py-8 text-sm text-[var(--color-error)]">Unable to load projects.</div>}
+            {!isError && projects.length === 0 && (
+              <div className="px-6 py-8 text-sm text-slate-600">No projects yet. Create a project to connect pipelines and deployments.</div>
+            )}
             {projects.map((project) => {
-              const tone = statTone(project.health);
+              const tone = statTone(project);
+              const projectRuns = data?.runs.filter((run) => run.project_id === project.id).length ?? 0;
               return (
                 <article key={project.id} className="flex flex-col gap-4 px-5 py-5 transition hover:bg-slate-50 sm:flex-row sm:items-center sm:px-6">
-                  <div className="flex items-start gap-4 min-w-0 flex-1">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl" style={{ background: project.health === 'healthy' ? 'var(--color-success-bg)' : 'rgba(214,138,31,0.12)' }}>
-                      <Boxes size={18} style={{ color: project.health === 'healthy' ? 'var(--color-success)' : 'var(--color-warning)' }} />
+                  <div className="flex min-w-0 flex-1 items-start gap-4">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl" style={{ background: tone.bg }}>
+                      <Boxes size={18} style={{ color: tone.text }} />
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
                         <h3 className="truncate text-[15px] font-semibold tracking-tight text-slate-950">{project.name}</h3>
                         <span className="rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em]" style={{ background: tone.bg, color: tone.text }}>
-                          {project.statusText}
+                          {tone.label}
                         </span>
                       </div>
-                      <p className="mt-1 text-sm leading-6 text-slate-600">{project.description}</p>
-                      <p className="mt-2 text-[12px] text-slate-500">{project.summary}</p>
+                      <p className="mt-1 text-sm leading-6 text-slate-600">{project.description || 'No description has been added yet.'}</p>
+                      <p className="mt-2 text-[12px] text-slate-500">
+                        {project.repo_url || 'Repository not connected'} · Updated {timeAgo(project.updated_at)}
+                      </p>
                     </div>
                   </div>
 
                   <div className="grid gap-3 text-left text-[11px] text-slate-500 sm:min-w-[240px] sm:text-right">
                     <div>
                       <span className="font-semibold uppercase tracking-[0.16em] text-slate-600">Branch</span>
-                      <p className="mt-1 font-semibold text-slate-800 font-mono">{project.repo_branch}</p>
+                      <p className="mt-1 font-mono font-semibold text-slate-800">{project.repo_branch}</p>
                     </div>
                     <div>
                       <span className="font-semibold uppercase tracking-[0.16em] text-slate-600">Runs</span>
-                      <p className="mt-1 font-semibold text-slate-800">{project.runs}</p>
+                      <p className="mt-1 font-semibold text-slate-800">{projectRuns}</p>
                     </div>
                     <div>
-                      <span className="font-semibold uppercase tracking-[0.16em] text-slate-600">Contributors</span>
-                      <p className="mt-1 font-semibold text-slate-800">{project.members}</p>
+                      <span className="font-semibold uppercase tracking-[0.16em] text-slate-600">Provider</span>
+                      <p className="mt-1 font-semibold text-slate-800">{project.repo_provider || 'Manual'}</p>
                     </div>
                   </div>
 
@@ -202,21 +143,26 @@ export default function ProjectsPage() {
             </div>
 
             <div className="mt-4 space-y-3">
-              {[
-                { label: 'GitHub', value: '3 repos', width: '78%' },
-                { label: 'GitLab', value: '1 repo', width: '22%' },
-                { label: 'Default branch main', value: '2 repos', width: '64%' },
-              ].map((item) => (
-                <div key={item.label}>
+              {Object.entries(providers).map(([label, count]) => (
+                <div key={label}>
                   <div className="mb-1 flex items-center justify-between text-[12px]">
-                    <span className="font-semibold text-slate-800">{item.label}</span>
-                    <span className="text-slate-500">{item.value}</span>
+                    <span className="font-semibold text-slate-800">{label}</span>
+                    <span className="text-slate-500">{count} repos</span>
                   </div>
                   <div className="h-2 rounded-full bg-slate-100">
-                    <div className="h-2 rounded-full" style={{ width: item.width, background: 'linear-gradient(90deg, #e06a2c, #1b6b5f)' }} />
+                    <div className="h-2 rounded-full" style={{ width: `${projects.length ? (count / projects.length) * 100 : 0}%`, background: 'linear-gradient(90deg, #e06a2c, #1b6b5f)' }} />
                   </div>
                 </div>
               ))}
+              <div>
+                <div className="mb-1 flex items-center justify-between text-[12px]">
+                  <span className="font-semibold text-slate-800">Default branch main</span>
+                  <span className="text-slate-500">{mainBranches} repos</span>
+                </div>
+                <div className="h-2 rounded-full bg-slate-100">
+                  <div className="h-2 rounded-full" style={{ width: `${projects.length ? (mainBranches / projects.length) * 100 : 0}%`, background: 'linear-gradient(90deg, #e06a2c, #1b6b5f)' }} />
+                </div>
+              </div>
             </div>
           </div>
 
@@ -224,22 +170,18 @@ export default function ProjectsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-[14px] font-semibold tracking-tight text-slate-950">Recent activity</h3>
-                <p className="text-[12px] font-medium text-slate-600">Changes in the last 24 hours</p>
+                <p className="text-[12px] font-medium text-slate-600">Latest pipeline runs</p>
               </div>
               <Users size={15} className="text-slate-500" />
             </div>
-
             <div className="mt-4 space-y-3">
-              {[
-                'Branch protection updated for Payments Gateway.',
-                'Developer Portal added a new review rule.',
-                'Mobile API had one failed run on release branch.',
-              ].map((item, index) => (
-                <div key={item} className="rounded-xl bg-slate-50/80 px-4 py-3 text-sm leading-6 text-slate-700">
+              {(data?.runs ?? []).slice(0, 3).map((run, index) => (
+                <div key={run.id} className="rounded-xl bg-slate-50/80 px-4 py-3 text-sm leading-6 text-slate-700">
                   <span className="mr-2 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-600">0{index + 1}</span>
-                  {item}
+                  Run #{run.run_number} on {run.trigger_ref || 'manual'} is {run.status}.
                 </div>
               ))}
+              {(data?.runs.length ?? 0) === 0 && <p className="text-sm leading-6 text-slate-600">No activity yet.</p>}
             </div>
           </div>
         </div>
@@ -247,7 +189,3 @@ export default function ProjectsPage() {
     </div>
   );
 }
-
-
-
-

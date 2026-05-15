@@ -11,7 +11,7 @@ import (
 
 // NewRedis creates a Redis client connection
 func NewRedis(cfg config.RedisConfig) (*redis.Client, error) {
-	client := redis.NewClient(&redis.Options{
+	options := &redis.Options{
 		Addr:         cfg.Addr(),
 		Password:     cfg.Password,
 		DB:           cfg.DB,
@@ -20,7 +20,15 @@ func NewRedis(cfg config.RedisConfig) (*redis.Client, error) {
 		WriteTimeout: 3 * time.Second,
 		PoolSize:     20,
 		MinIdleConns: 5,
-	})
+	}
+	if cfg.URL != "" {
+		parsed, err := redis.ParseURL(cfg.URL)
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse Redis URL: %w", err)
+		}
+		options = parsed
+	}
+	client := redis.NewClient(options)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

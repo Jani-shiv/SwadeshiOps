@@ -182,6 +182,10 @@ func (s *Service) ValidateToken(tokenStr string) (*Claims, error) {
 	if err != nil {
 		return nil, fmt.Errorf("invalid user ID in token")
 	}
+	tokenType, ok := mapClaims["type"].(string)
+	if !ok || tokenType != "access" {
+		return nil, fmt.Errorf("invalid token type")
+	}
 
 	claims := &Claims{
 		UserID: userID,

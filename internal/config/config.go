@@ -29,6 +29,7 @@ type AppConfig struct {
 }
 
 type DatabaseConfig struct {
+	URL      string
 	Host     string
 	Port     int
 	User     string
@@ -40,6 +41,9 @@ type DatabaseConfig struct {
 }
 
 func (d DatabaseConfig) DSN() string {
+	if d.URL != "" {
+		return d.URL
+	}
 	return fmt.Sprintf(
 		"postgres://%s:%s@%s:%d/%s?sslmode=%s",
 		d.User, d.Password, d.Host, d.Port, d.Name, d.SSLMode,
@@ -47,6 +51,7 @@ func (d DatabaseConfig) DSN() string {
 }
 
 type RedisConfig struct {
+	URL      string
 	Host     string
 	Port     int
 	Password string
@@ -104,6 +109,7 @@ func Load() (*Config, error) {
 			Secret: getEnv("APP_SECRET", "dev-secret-change-me"),
 		},
 		Database: DatabaseConfig{
+			URL:      getEnv("DATABASE_URL", ""),
 			Host:     getEnv("DB_HOST", "localhost"),
 			Port:     getEnvInt("DB_PORT", 5432),
 			User:     getEnv("DB_USER", "swadeshiops"),
@@ -114,6 +120,7 @@ func Load() (*Config, error) {
 			MinConns: getEnvInt("DB_MIN_CONNS", 5),
 		},
 		Redis: RedisConfig{
+			URL:      getEnv("REDIS_URL", ""),
 			Host:     getEnv("REDIS_HOST", "localhost"),
 			Port:     getEnvInt("REDIS_PORT", 6379),
 			Password: getEnv("REDIS_PASSWORD", ""),
@@ -149,6 +156,18 @@ func Load() (*Config, error) {
 		Telegram: TelegramConfig{
 			BotToken: getEnv("TELEGRAM_BOT_TOKEN", ""),
 		},
+	}
+
+	if cfg.App.Env == "production" {
+		if cfg.JWT.Secret == "" || cfg.JWT.Secret == "dev-jwt-secret-change-me" || cfg.JWT.Secret == "change-this-to-a-random-jwt-secret" {
+			return nil, fmt.Errorf("JWT_SECRET must be set to a strong unique value in production")
+		}
+		if cfg.App.Secret == "" || cfg.App.Secret == "dev-secret-change-me" || cfg.App.Secret == "change-this-to-a-random-secret-key" {
+			return nil, fmt.Errorf("APP_SECRET must be set to a strong unique value in production")
+		}
+		if cfg.Encryption.Key == "" {
+			return nil, fmt.Errorf("ENCRYPTION_KEY must be set in production")
+		}
 	}
 
 	return cfg, nil

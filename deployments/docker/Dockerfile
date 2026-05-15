@@ -3,7 +3,7 @@
 # ============================================
 
 # Stage 1: Build
-FROM golang:1.22-alpine AS builder
+FROM golang:1.23-alpine AS builder
 
 ARG VERSION=dev
 ARG COMMIT_SHA=unknown
@@ -28,7 +28,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build \
 # Stage 2: Runtime
 FROM alpine:3.19
 
-RUN apk add --no-cache ca-certificates tzdata
+RUN apk add --no-cache ca-certificates tzdata wget
 
 # Create non-root user
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup

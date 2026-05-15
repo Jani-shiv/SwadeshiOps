@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { APIResponse, LoginResponse, User } from '../types';
+import type { APIResponse, DashboardStats, Deployment, EnvVar, LoginResponse, Organization, Pipeline, PipelineRun, Project, Secret, User } from '../types';
 
 const api = axios.create({
   baseURL: '/api/v1',
@@ -63,17 +63,29 @@ export const authAPI = {
 // ─── Projects ──────────────────────────────────
 export const projectsAPI = {
   list: async (orgId: string) => {
-    const { data } = await api.get(`/orgs/${orgId}/projects`);
+    const { data } = await api.get<APIResponse<Project[]>>(`/orgs/${orgId}/projects`);
     return data;
   },
 
   get: async (projectId: string) => {
-    const { data } = await api.get(`/projects/${projectId}`);
+    const { data } = await api.get<APIResponse<Project>>(`/projects/${projectId}`);
     return data;
   },
 
   create: async (orgId: string, project: { name: string; description?: string; repo_url?: string }) => {
-    const { data } = await api.post(`/orgs/${orgId}/projects`, project);
+    const { data } = await api.post<APIResponse<Project>>(`/orgs/${orgId}/projects`, project);
+    return data;
+  },
+};
+
+export const orgsAPI = {
+  list: async () => {
+    const { data } = await api.get<APIResponse<Organization[]>>('/orgs');
+    return data;
+  },
+
+  create: async (org: { name: string; slug?: string }) => {
+    const { data } = await api.post<APIResponse<Organization>>('/orgs', org);
     return data;
   },
 };
@@ -81,7 +93,7 @@ export const projectsAPI = {
 // ─── Pipelines ─────────────────────────────────
 export const pipelinesAPI = {
   list: async (projectId: string) => {
-    const { data } = await api.get(`/projects/${projectId}/pipelines`);
+    const { data } = await api.get<APIResponse<Pipeline[]>>(`/projects/${projectId}/pipelines`);
     return data;
   },
 
@@ -96,7 +108,28 @@ export const pipelinesAPI = {
   },
 
   runs: async (pipelineId: string) => {
-    const { data } = await api.get(`/pipelines/${pipelineId}/runs`);
+    const { data } = await api.get<APIResponse<PipelineRun[]>>(`/pipelines/${pipelineId}/runs`);
+    return data;
+  },
+};
+
+export const deploymentsAPI = {
+  list: async (projectId: string) => {
+    const { data } = await api.get<APIResponse<Deployment[]>>(`/projects/${projectId}/deployments`);
+    return data;
+  },
+};
+
+export const secretsAPI = {
+  list: async (projectId: string) => {
+    const { data } = await api.get<APIResponse<Secret[]>>(`/projects/${projectId}/secrets`);
+    return data;
+  },
+};
+
+export const envVarsAPI = {
+  list: async (projectId: string) => {
+    const { data } = await api.get<APIResponse<EnvVar[]>>(`/projects/${projectId}/envvars`);
     return data;
   },
 };
@@ -104,7 +137,7 @@ export const pipelinesAPI = {
 // ─── Stats ─────────────────────────────────────
 export const statsAPI = {
   org: async (orgId: string) => {
-    const { data } = await api.get(`/orgs/${orgId}/stats`);
+    const { data } = await api.get<APIResponse<DashboardStats>>(`/orgs/${orgId}/stats`);
     return data;
   },
 
