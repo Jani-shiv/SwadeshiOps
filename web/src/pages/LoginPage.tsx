@@ -32,8 +32,14 @@ export default function LoginPage() {
         navigate('/');
       }
     } catch (err: unknown) {
-      const error = err as { response?: { data?: { error?: { message?: string } } } };
-      setError(error?.response?.data?.error?.message || 'Something went wrong');
+      const axiosError = err as { response?: { data?: { error?: { message?: string } } }, request?: unknown };
+      if (axiosError.response) {
+        setError(axiosError.response.data?.error?.message || 'Something went wrong');
+      } else if (axiosError.request) {
+        setError('Unable to connect to the server. Please ensure the backend is running.');
+      } else {
+        setError('Something went wrong');
+      }
     } finally {
       setLoading(false);
     }
@@ -230,11 +236,11 @@ export default function LoginPage() {
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <button className="btn-secondary flex items-center justify-center gap-2 rounded-xl py-3 text-[13px] font-medium">
+                <button type="button" className="btn-secondary flex items-center justify-center gap-2 rounded-xl py-3 text-[13px] font-medium">
                   <ExternalLink size={16} />
                   GitHub
                 </button>
-                <button className="btn-secondary flex items-center justify-center gap-2 rounded-xl py-3 text-[13px] font-medium">
+                <button type="button" className="btn-secondary flex items-center justify-center gap-2 rounded-xl py-3 text-[13px] font-medium">
                   <GitBranch size={16} />
                   GitLab
                 </button>
@@ -243,6 +249,7 @@ export default function LoginPage() {
               <p className="mt-8 text-center text-[13px] text-slate-500">
                 {isLogin ? "Don't have an account? " : 'Already have an account? '}
                 <button
+                  type="button"
                   onClick={() => { setIsLogin(!isLogin); setError(''); }}
                   className="font-bold text-[color:var(--color-accent)] transition hover:opacity-80"
                 >
