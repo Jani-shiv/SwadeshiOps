@@ -142,6 +142,7 @@ export interface EnvVar {
 
 export interface WorkspaceData {
   orgs: Organization[];
+  activeOrg?: Organization;
   projects: Project[];
   pipelines: Pipeline[];
   runs: PipelineRun[];
