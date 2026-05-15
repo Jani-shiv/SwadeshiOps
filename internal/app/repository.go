@@ -556,6 +556,30 @@ func (r *Repository) GetWorkspaceData(ctx context.Context, orgID, userID uuid.UU
 		rowsD.Close()
 	}
 
+	// Secrets (bulk fetch)
+	rowsS, err := r.db.Query(ctx, `
+		SELECT s.id, s.project_id, s.name, s.description, s.created_at, s.updated_at
+		FROM secrets s
+		JOIN projects p ON p.id = s.project_id
+		WHERE p.org_id = $1
+	`, orgID)
+	if err == nil {
+		data.Secrets, _ = scanSecrets(rowsS)
+		rowsS.Close()
+	}
+
+	// EnvVars (bulk fetch)
+	rowsE, err := r.db.Query(ctx, `
+		SELECT e.id, e.project_id, e.name, e.is_secret, e.environment, e.created_at, e.updated_at
+		FROM env_vars e
+		JOIN projects p ON p.id = e.project_id
+		WHERE p.org_id = $1
+	`, orgID)
+	if err == nil {
+		data.EnvVars, _ = scanEnvVars(rowsE)
+		rowsE.Close()
+	}
+
 	return data, nil
 }
 
@@ -723,4 +747,28 @@ func scanDeployments(rows pgx.Rows) ([]Deployment, error) {
 		deployments = append(deployments, deployment)
 	}
 	return deployments, rows.Err()
+}
+
+func scanSecrets(rows pgx.Rows) ([]Secret, error) {
+	var secrets []Secret
+	for rows.Next() {
+		var s Secret
+		if err := rows.Scan(&s.ID, &s.ProjectID, &s.Name, &s.Description, &s.CreatedAt, &s.UpdatedAt); err != nil {
+			return nil, err
+		}
+		secrets = append(secrets, s)
+	}
+	return secrets, rows.Err()
+}
+
+func scanEnvVars(rows pgx.Rows) ([]EnvVar, error) {
+	var envVars []EnvVar
+	for rows.Next() {
+		var e EnvVar
+		if err := rows.Scan(&e.ID, &e.ProjectID, &e.Name, &e.IsSecret, &e.Environment, &e.CreatedAt, &e.UpdatedAt); err != nil {
+			return nil, err
+		}
+		envVars = append(envVars, e)
+	}
+	return envVars, rows.Err()
 }

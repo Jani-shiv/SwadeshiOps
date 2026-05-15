@@ -151,3 +151,14 @@ type createEnvVarRequest struct {
 	IsSecret    bool   `json:"is_secret"`
 	Environment string `json:"environment"`
 }
+
+type WorkspaceData struct {
+	Orgs        []Organization  `json:"orgs"`
+	Projects    []Project       `json:"projects"`
+	Pipelines   []Pipeline      `json:"pipelines"`
+	Runs        []PipelineRun   `json:"runs"`
+	Deployments []Deployment    `json:"deployments"`
+	Secrets     []Secret        `json:"secrets"`
+	EnvVars     []EnvVar        `json:"envVars"`
+	Stats       *DashboardStats `json:"stats,omitempty"`
+}
