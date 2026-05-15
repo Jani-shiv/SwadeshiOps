@@ -17,6 +17,8 @@ import { useAuth } from '../store/useAuth';
 
 interface SidebarProps {
   collapsed: boolean;
+  mobileOpen: boolean;
+  onNavigate: () => void;
   onToggle: () => void;
 }
 
@@ -45,13 +47,15 @@ const navSections = [
   },
 ];
 
-export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
+export default function Sidebar({ collapsed, mobileOpen, onNavigate, onToggle }: SidebarProps) {
   const { user, logout } = useAuth();
 
   return (
     <aside
-      className={`fixed left-0 top-0 h-screen z-40 flex flex-col glass-sidebar transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${
-        collapsed ? 'w-[88px]' : 'w-[268px]'
+      className={`fixed left-0 top-0 z-40 flex h-screen flex-col glass-sidebar transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+        collapsed ? 'lg:w-[88px]' : 'lg:w-[268px]'
+      } w-[284px] ${
+        mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
       }`}
     >
       <div className="flex h-[72px] shrink-0 items-center gap-3 border-b border-[var(--color-border)] px-4">
@@ -60,7 +64,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
         </div>
         {!collapsed && (
           <div className="animate-fade-in">
-            <h1 className="text-[16px] font-extrabold tracking-tight text-slate-50 whitespace-nowrap">
+            <h1 className="text-[16px] font-extrabold tracking-tight text-slate-950 whitespace-nowrap">
               Swadeshi<span className="gradient-text">Ops</span>
             </h1>
             <p className="-mt-0.5 whitespace-nowrap text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-500">
@@ -84,17 +88,18 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
                   key={item.to}
                   to={item.to}
                   end={item.to === '/'}
+                  onClick={onNavigate}
                   className={({ isActive }) => `group flex items-center gap-3 rounded-xl px-3 py-2.5 text-[14px] font-medium transition-all duration-200 ${
                     isActive
-                      ? 'bg-blue-500/10 text-slate-50 shadow-[inset_0_0_0_1px_rgba(59,130,246,0.2)]'
-                      : 'text-slate-400 hover:bg-blue-500/5 hover:text-slate-50'
+                      ? 'bg-indigo-500/10 text-slate-950 shadow-[inset_0_0_0_1px_rgba(99,102,241,0.22)]'
+                      : 'text-slate-600 hover:bg-indigo-500/5 hover:text-slate-950'
                   }`}
                 >
                   {({ isActive }) => (
                     <>
                       <item.icon
                         size={18}
-                        className={`shrink-0 transition-all duration-200 ${isActive ? 'text-[color:var(--color-accent)]' : 'text-slate-500 group-hover:text-slate-50'}`}
+                        className={`shrink-0 transition-all duration-200 ${isActive ? 'text-[color:var(--color-accent)]' : 'text-slate-500 group-hover:text-slate-950'}`}
                       />
                       {!collapsed && (
                         <span className="animate-fade-in whitespace-nowrap">{item.label}</span>
@@ -113,7 +118,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
           <div className="glass-card-flat animate-fade-in cursor-pointer rounded-2xl p-4">
             <div className="mb-2 flex items-center gap-2">
               <Sparkles size={14} style={{ color: 'var(--color-accent)' }} />
-              <span className="text-[12px] font-bold text-slate-50">Upgrade to Pro</span>
+              <span className="text-[12px] font-bold text-slate-950">Upgrade to Pro</span>
             </div>
             <p className="text-[10px] leading-relaxed text-slate-500">
               Unlock unlimited pipelines, runners, and team seats.
@@ -123,14 +128,14 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
 
         <button
           onClick={onToggle}
-          className="flex w-full items-center justify-center gap-2 rounded-xl py-2 text-xs font-medium text-slate-500 transition-all duration-200 hover:bg-blue-500/5 hover:text-slate-50"
+          className="hidden w-full items-center justify-center gap-2 rounded-xl py-2 text-xs font-medium text-slate-500 transition-all duration-200 hover:bg-indigo-500/5 hover:text-slate-950 lg:flex"
         >
           {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
           {!collapsed && <span className="animate-fade-in">Collapse</span>}
         </button>
 
         {user && (
-          <div className="flex items-center gap-3 rounded-xl px-2 py-2.5 transition-colors hover:bg-blue-500/5">
+          <div className="flex items-center gap-3 rounded-xl px-2 py-2.5 transition-colors hover:bg-indigo-500/5">
             <div
               className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[11px] font-bold text-white"
               style={{
@@ -142,7 +147,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
             </div>
             {!collapsed && (
               <div className="min-w-0 flex-1 animate-fade-in">
-                <p className="truncate text-[13px] font-semibold text-slate-50">
+                <p className="truncate text-[13px] font-semibold text-slate-950">
                   {user.full_name || user.username}
                 </p>
                 <p className="truncate text-[10px] text-slate-500">{user.email}</p>
@@ -151,7 +156,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
             {!collapsed && (
               <button
                 onClick={logout}
-                className="rounded-lg p-1.5 text-slate-500 transition-colors hover:bg-blue-500/5 hover:text-red-500"
+                className="rounded-lg p-1.5 text-slate-500 transition-colors hover:bg-indigo-500/5 hover:text-red-500"
                 title="Logout"
               >
                 <LogOut size={14} />

@@ -104,7 +104,7 @@ export default function ProjectsPage() {
         </div>
 
         <div className="page-actions">
-          <div className="glass-card-flat flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold text-slate-400">
+          <div className="glass-card-flat flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold text-slate-600">
             <Calendar size={13} />
             Updated today
           </div>
@@ -120,9 +120,9 @@ export default function ProjectsPage() {
           <div key={stat.label} className="glass-card rounded-xl p-5">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-[12px] font-medium text-slate-400 text-slate-500">{stat.label}</p>
-                <p className="mt-2 text-[32px] font-semibold tracking-tight tracking-tight text-slate-50">{stat.value}</p>
-                <p className="mt-2 text-sm text-slate-400">{stat.note}</p>
+                <p className="text-[12px] font-medium text-slate-500">{stat.label}</p>
+                <p className="mt-2 text-[32px] font-semibold tracking-tight text-slate-950">{stat.value}</p>
+                <p className="mt-2 text-sm text-slate-600">{stat.note}</p>
               </div>
               <div className="flex h-11 w-11 items-center justify-center rounded-xl" style={{ background: 'var(--color-accent-soft)' }}>
                 <stat.icon size={18} style={{ color: stat.color }} />
@@ -134,54 +134,54 @@ export default function ProjectsPage() {
 
       <section className="split-grid">
         <div className="glass-card overflow-hidden rounded-2xl">
-          <div className="flex flex-col gap-3 border-b border-[rgba(255,255,255,0.08)] px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+          <div className="flex flex-col gap-3 border-b border-slate-200/80 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
             <div>
-              <h2 className="text-[15px] font-semibold tracking-tight text-slate-50">Repository overview</h2>
-              <p className="text-[12px] font-medium text-slate-400">Branch, health, and recent run volume</p>
+              <h2 className="text-[15px] font-semibold tracking-tight text-slate-950">Repository overview</h2>
+              <p className="text-[12px] font-medium text-slate-600">Branch, health, and recent run volume</p>
             </div>
-            <div className="glass-card-flat flex items-center gap-2 rounded-xl px-3 py-2 text-xs text-slate-400">
+            <div className="glass-card-flat flex items-center gap-2 rounded-xl px-3 py-2 text-xs text-slate-600">
               <Search size={14} />
               Search projects
             </div>
           </div>
 
-          <div className="divide-y divide-[rgba(255,255,255,0.08)]">
+          <div className="divide-y divide-slate-200/80">
             {projects.map((project) => {
               const tone = statTone(project.health);
               return (
-                <article key={project.id} className="flex flex-col gap-4 px-5 py-5 transition hover:bg-white/5 sm:flex-row sm:items-center sm:px-6">
+                <article key={project.id} className="flex flex-col gap-4 px-5 py-5 transition hover:bg-slate-50 sm:flex-row sm:items-center sm:px-6">
                   <div className="flex items-start gap-4 min-w-0 flex-1">
                     <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl" style={{ background: project.health === 'healthy' ? 'var(--color-success-bg)' : 'rgba(214,138,31,0.12)' }}>
                       <Boxes size={18} style={{ color: project.health === 'healthy' ? 'var(--color-success)' : 'var(--color-warning)' }} />
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
-                        <h3 className="truncate text-[15px] font-semibold tracking-tight text-slate-50">{project.name}</h3>
+                        <h3 className="truncate text-[15px] font-semibold tracking-tight text-slate-950">{project.name}</h3>
                         <span className="rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em]" style={{ background: tone.bg, color: tone.text }}>
                           {project.statusText}
                         </span>
                       </div>
-                      <p className="mt-1 text-sm leading-6 text-slate-400">{project.description}</p>
+                      <p className="mt-1 text-sm leading-6 text-slate-600">{project.description}</p>
                       <p className="mt-2 text-[12px] text-slate-500">{project.summary}</p>
                     </div>
                   </div>
 
                   <div className="grid gap-3 text-left text-[11px] text-slate-500 sm:min-w-[240px] sm:text-right">
                     <div>
-                      <span className="font-semibold uppercase tracking-[0.16em] text-slate-400">Branch</span>
-                      <p className="mt-1 font-semibold text-slate-100 font-mono">{project.repo_branch}</p>
+                      <span className="font-semibold uppercase tracking-[0.16em] text-slate-600">Branch</span>
+                      <p className="mt-1 font-semibold text-slate-800 font-mono">{project.repo_branch}</p>
                     </div>
                     <div>
-                      <span className="font-semibold uppercase tracking-[0.16em] text-slate-400">Runs</span>
-                      <p className="mt-1 font-semibold text-slate-100">{project.runs}</p>
+                      <span className="font-semibold uppercase tracking-[0.16em] text-slate-600">Runs</span>
+                      <p className="mt-1 font-semibold text-slate-800">{project.runs}</p>
                     </div>
                     <div>
-                      <span className="font-semibold uppercase tracking-[0.16em] text-slate-400">Contributors</span>
-                      <p className="mt-1 font-semibold text-slate-100">{project.members}</p>
+                      <span className="font-semibold uppercase tracking-[0.16em] text-slate-600">Contributors</span>
+                      <p className="mt-1 font-semibold text-slate-800">{project.members}</p>
                     </div>
                   </div>
 
-                  <button className="flex items-center gap-2 self-start rounded-xl px-3 py-2 text-[13px] font-medium text-[color:var(--color-accent)] transition hover:bg-white/5 sm:self-center">
+                  <button className="flex items-center gap-2 self-start rounded-xl px-3 py-2 text-[13px] font-medium text-[color:var(--color-accent)] transition hover:bg-slate-50 sm:self-center">
                     Open
                     <ArrowUpRight size={14} />
                   </button>
@@ -195,8 +195,8 @@ export default function ProjectsPage() {
           <div className="glass-card rounded-2xl p-5">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-[14px] font-semibold tracking-tight text-slate-50">Repository mix</h3>
-                <p className="text-[12px] font-medium text-slate-400">Provider and branch health</p>
+                <h3 className="text-[14px] font-semibold tracking-tight text-slate-950">Repository mix</h3>
+                <p className="text-[12px] font-medium text-slate-600">Provider and branch health</p>
               </div>
               <Globe size={15} className="text-slate-500" />
             </div>
@@ -209,10 +209,10 @@ export default function ProjectsPage() {
               ].map((item) => (
                 <div key={item.label}>
                   <div className="mb-1 flex items-center justify-between text-[12px]">
-                    <span className="font-semibold text-slate-100">{item.label}</span>
+                    <span className="font-semibold text-slate-800">{item.label}</span>
                     <span className="text-slate-500">{item.value}</span>
                   </div>
-                  <div className="h-2 rounded-full bg-[rgba(255,255,255,0.08)]">
+                  <div className="h-2 rounded-full bg-slate-100">
                     <div className="h-2 rounded-full" style={{ width: item.width, background: 'linear-gradient(90deg, #e06a2c, #1b6b5f)' }} />
                   </div>
                 </div>
@@ -223,8 +223,8 @@ export default function ProjectsPage() {
           <div className="glass-card rounded-2xl p-5">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-[14px] font-semibold tracking-tight text-slate-50">Recent activity</h3>
-                <p className="text-[12px] font-medium text-slate-400">Changes in the last 24 hours</p>
+                <h3 className="text-[14px] font-semibold tracking-tight text-slate-950">Recent activity</h3>
+                <p className="text-[12px] font-medium text-slate-600">Changes in the last 24 hours</p>
               </div>
               <Users size={15} className="text-slate-500" />
             </div>
@@ -235,8 +235,8 @@ export default function ProjectsPage() {
                 'Developer Portal added a new review rule.',
                 'Mobile API had one failed run on release branch.',
               ].map((item, index) => (
-                <div key={item} className="rounded-xl bg-[rgba(255,255,255,0.04)] px-4 py-3 text-sm leading-6 text-slate-300">
-                  <span className="mr-2 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">0{index + 1}</span>
+                <div key={item} className="rounded-xl bg-slate-50/80 px-4 py-3 text-sm leading-6 text-slate-700">
+                  <span className="mr-2 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-600">0{index + 1}</span>
                   {item}
                 </div>
               ))}

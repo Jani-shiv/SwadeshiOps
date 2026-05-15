@@ -34,7 +34,7 @@ export default function LogsPage() {
         </div>
 
           <div className="page-actions">
-          <div className="glass-card-flat flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold text-slate-400">
+          <div className="glass-card-flat flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold text-slate-600">
             <Activity size={13} />
             Streaming now
           </div>
@@ -49,7 +49,7 @@ export default function LogsPage() {
         {chips.map((chip) => (
           <div key={chip.label} className="glass-card rounded-[1.5rem] px-5 py-4">
             <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-500">{chip.label}</p>
-            <p className="mt-2 text-2xl font-semibold tracking-tight text-slate-50">{chip.value}</p>
+            <p className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">{chip.value}</p>
           </div>
         ))}
       </section>
@@ -59,13 +59,13 @@ export default function LogsPage() {
           <div className="glass-card rounded-2xl p-5">
             <div className="flex items-center gap-2">
               <Filter size={15} className="text-slate-500" />
-              <h2 className="text-[14px] font-semibold tracking-tight text-slate-50">Filters</h2>
+              <h2 className="text-[14px] font-semibold tracking-tight text-slate-950">Filters</h2>
             </div>
             <div className="mt-4 space-y-3">
               {['All services', 'Errors only', 'Warnings only', 'Last 15 minutes'].map((item) => (
-                <button key={item} className="flex w-full items-center justify-between rounded-xl bg-[rgba(255,255,255,0.04)] px-4 py-3 text-left text-sm font-medium text-slate-300 transition hover:bg-[rgba(255,255,255,0.08)]">
+                <button key={item} className="flex w-full items-center justify-between rounded-xl bg-slate-50/80 px-4 py-3 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-100">
                   <span>{item}</span>
-                  <span className="text-slate-400">›</span>
+                  <span className="text-slate-600">›</span>
                 </button>
               ))}
             </div>
@@ -74,9 +74,9 @@ export default function LogsPage() {
           <div className="glass-card rounded-2xl p-5">
             <div className="flex items-center gap-2">
               <Shield size={15} className="text-[color:var(--color-success)]" />
-              <h2 className="text-[14px] font-semibold tracking-tight text-slate-50">Health check</h2>
+              <h2 className="text-[14px] font-semibold tracking-tight text-slate-950">Health check</h2>
             </div>
-            <p className="mt-3 text-sm leading-6 text-slate-400">
+            <p className="mt-3 text-sm leading-6 text-slate-600">
               The preview environment recovered after one retry. Production remains stable and build latency is within target.
             </p>
             <div className="mt-4 rounded-xl bg-[rgba(27,139,90,0.10)] px-4 py-3 text-[12px] font-semibold text-[var(--color-success)]">
@@ -86,24 +86,24 @@ export default function LogsPage() {
         </aside>
 
         <div className="glass-card overflow-hidden rounded-2xl">
-          <div className="flex flex-col gap-3 border-b border-[rgba(255,255,255,0.08)] px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+          <div className="flex flex-col gap-3 border-b border-slate-200/80 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
             <div>
-              <h2 className="text-[15px] font-semibold tracking-tight text-slate-50">payments-gateway / deploy</h2>
-              <p className="text-[12px] font-medium text-slate-400">Tail -f output with line groups and status markers</p>
+              <h2 className="text-[15px] font-semibold tracking-tight text-slate-950">payments-gateway / deploy</h2>
+              <p className="text-[12px] font-medium text-slate-600">Tail -f output with line groups and status markers</p>
             </div>
             <div className="flex flex-wrap items-center gap-2">
-              <div className="glass-card-flat flex items-center gap-2 rounded-xl px-3 py-2 text-xs text-slate-400">
+              <div className="glass-card-flat flex items-center gap-2 rounded-xl px-3 py-2 text-xs text-slate-600">
                 <Search size={14} />
                 Search log
               </div>
-              <button className="glass-card-flat flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-semibold text-slate-400">
+              <button className="glass-card-flat flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-semibold text-slate-600">
                 <Copy size={14} />
                 Copy
               </button>
             </div>
           </div>
 
-          <div className="bg-[#0f172a] px-5 py-5 sm:px-6">
+          <div className="bg-slate-950 px-5 py-5 sm:px-6">
             <div className="mb-4 flex items-center justify-between text-[10px] uppercase tracking-[0.18em] text-slate-400">
               <span>Session 042</span>
               <span>Live tailing</span>
@@ -111,8 +111,8 @@ export default function LogsPage() {
 
             <div className="space-y-3 font-mono text-[12px] leading-6 text-slate-200">
               {logLines.map((line) => (
-                <div key={`${line.time}-${line.text}`} className="flex gap-4 rounded-xl px-3 py-2 hover:bg-slate-900/5">
-                  <span className="w-20 shrink-0 text-slate-500">{line.time}</span>
+                <div key={`${line.time}-${line.text}`} className="flex gap-4 rounded-xl px-3 py-2 hover:bg-white/5">
+                  <span className="w-20 shrink-0 text-slate-400">{line.time}</span>
                   <span className={`shrink-0 font-bold uppercase tracking-[0.14em] ${line.level === 'error' ? 'text-[var(--color-error)]' : line.level === 'warn' ? 'text-[var(--color-warning)]' : line.level === 'success' ? 'text-[var(--color-success)]' : 'text-[color:var(--color-blue)]'}`}>
                     {line.level}
                   </span>
@@ -122,7 +122,7 @@ export default function LogsPage() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-3 border-t border-[rgba(255,255,255,0.08)] px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+          <div className="flex flex-col gap-3 border-t border-slate-200/80 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
             <div className="flex items-center gap-3 text-[12px] text-slate-500">
               <TimerReset size={14} />
               Updated a few seconds ago
