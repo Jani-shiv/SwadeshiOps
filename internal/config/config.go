@@ -19,7 +19,6 @@ type Config struct {
 	CORS       CORSConfig
 	SMTP       SMTPConfig
 	Telegram   TelegramConfig
-	Supabase   SupabaseConfig
 }
 
 type AppConfig struct {
@@ -100,11 +99,6 @@ type TelegramConfig struct {
 	BotToken string
 }
 
-type SupabaseConfig struct {
-	URL       string
-	AnonKey   string
-	JWTSecret string
-}
 
 // Load reads configuration from environment variables
 func Load() (*Config, error) {
@@ -162,11 +156,6 @@ func Load() (*Config, error) {
 		},
 		Telegram: TelegramConfig{
 			BotToken: getEnv("TELEGRAM_BOT_TOKEN", ""),
-		},
-		Supabase: SupabaseConfig{
-			URL:       getEnv("SUPABASE_URL", ""),
-			AnonKey:   getEnv("SUPABASE_ANON_KEY", ""),
-			JWTSecret: getEnv("SUPABASE_JWT_SECRET", ""),
 		},
 	}
 

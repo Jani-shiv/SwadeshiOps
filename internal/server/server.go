@@ -42,7 +42,7 @@ func New(cfg *config.Config, db *pgxpool.Pool, rdb *redis.Client, logger zerolog
 
 	// Initialize services
 	authRepo := auth.NewRepository(db)
-	s.authService = auth.NewService(authRepo, &cfg.JWT, &cfg.Supabase, logger)
+	s.authService = auth.NewService(authRepo, &cfg.JWT, logger)
 	appRepo := app.NewRepository(db)
 	var vault *crypto.Vault
 	if cfg.Encryption.Key != "" {

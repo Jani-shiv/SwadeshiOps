@@ -17,17 +17,15 @@ import (
 type Service struct {
 	repo     *Repository
 	cfg      *config.JWTConfig
-	supabase *config.SupabaseConfig
 	logger   zerolog.Logger
 }
 
 // NewService creates a new auth service
-func NewService(repo *Repository, cfg *config.JWTConfig, supabase *config.SupabaseConfig, logger zerolog.Logger) *Service {
+func NewService(repo *Repository, cfg *config.JWTConfig, logger zerolog.Logger) *Service {
 	return &Service{
-		repo:     repo,
-		cfg:      cfg,
-		supabase: supabase,
-		logger:   logger.With().Str("service", "auth").Logger(),
+		repo:   repo,
+		cfg:    cfg,
+		logger: logger.With().Str("service", "auth").Logger(),
 	}
 }
 
@@ -169,16 +167,6 @@ func (s *Service) ValidateToken(tokenStr string) (*Claims, error) {
 		return []byte(s.cfg.Secret), nil
 	})
 
-	// If failed, and we have a Supabase secret, try that
-	if err != nil && s.supabase != nil && s.supabase.JWTSecret != "" {
-		token, err = jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
-			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-			}
-			return []byte(s.supabase.JWTSecret), nil
-		})
-	}
-
 	if err != nil {
 		return nil, fmt.Errorf("invalid token: %w", err)
 	}
@@ -197,10 +185,8 @@ func (s *Service) ValidateToken(tokenStr string) (*Claims, error) {
 		return nil, fmt.Errorf("invalid user ID in token")
 	}
 	tokenType, _ := mapClaims["type"].(string)
-	if s.supabase == nil || s.supabase.JWTSecret == "" {
-		if tokenType != "access" {
-			return nil, fmt.Errorf("invalid token type")
-		}
+	if tokenType != "access" {
+		return nil, fmt.Errorf("invalid token type")
 	}
 
 	claims := &Claims{

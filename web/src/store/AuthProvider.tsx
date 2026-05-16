@@ -1,104 +1,52 @@
 import { useState, useEffect, type ReactNode } from 'react';
 import type { User } from '../types';
 import { AuthContext } from './AuthContext';
-import { supabase } from '../lib/supabase';
 import { authAPI } from '../services/api';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const syncUser = async (session: any) => {
-    if (!session?.user) return;
-    try {
-      await authAPI.sync({
-        id: session.user.id,
-        email: session.user.email || '',
-        full_name: session.user.user_metadata?.full_name,
-        username: session.user.user_metadata?.username,
-      });
-    } catch (err) {
-      console.error('Failed to sync user with backend', err);
-    }
-  };
-
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) {
-        setUser({
-          id: session.user.id,
-          email: session.user.email || '',
-          username: session.user.user_metadata?.username || session.user.email?.split('@')[0] || '',
-          full_name: session.user.user_metadata?.full_name || '',
-          role: 'member',
-          is_active: true,
-          created_at: session.user.created_at,
-          updated_at: session.user.updated_at || session.user.created_at,
+    const token = localStorage.getItem('access_token');
+    if (token) {
+      authAPI.me()
+        .then((response) => {
+          if (response.data) {
+            setUser(response.data);
+          }
+        })
+        .catch(() => {
+          localStorage.removeItem('access_token');
+          localStorage.removeItem('refresh_token');
+          setUser(null);
+        })
+        .finally(() => {
+          setIsLoading(false);
         });
-        localStorage.setItem('access_token', session.access_token);
-        syncUser(session);
-      } else {
-        setUser(null);
-        localStorage.removeItem('access_token');
-      }
+    } else {
       setIsLoading(false);
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session?.user) {
-        setUser({
-          id: session.user.id,
-          email: session.user.email || '',
-          username: session.user.user_metadata?.username || session.user.email?.split('@')[0] || '',
-          full_name: session.user.user_metadata?.full_name || '',
-          role: 'member',
-          is_active: true,
-          created_at: session.user.created_at,
-          updated_at: session.user.updated_at || session.user.created_at,
-        });
-        localStorage.setItem('access_token', session.access_token);
-        if (event === 'SIGNED_IN') {
-          syncUser(session);
-        }
-      } else {
-        setUser(null);
-        localStorage.removeItem('access_token');
-      }
-    });
-
-    return () => subscription.unsubscribe();
+    }
   }, []);
 
   const login = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) throw error;
+    const response = await authAPI.login(email, password);
+    if (response.data) {
+      setUser(response.data.user);
+    }
   };
 
   const register = async (email: string, username: string, password: string, fullName: string) => {
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          username,
-          full_name: fullName,
-        }
-      }
-    });
-    if (error) throw error;
-    
-    // Also try to register on our backend to keep DB in sync
-    try {
-      await authAPI.register(email, username, password, fullName);
-    } catch (err) {
-      console.warn('Backend registration failed, but Supabase auth succeeded', err);
+    const response = await authAPI.register(email, username, password, fullName);
+    if (response.data) {
+      // Auto-login after registration
+      await login(email, password);
     }
   };
 
   const logout = async () => {
-    await supabase.auth.signOut();
+    authAPI.logout();
     setUser(null);
-    localStorage.removeItem('access_token');
   };
 
   return (
