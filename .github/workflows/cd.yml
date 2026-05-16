@@ -120,22 +120,24 @@ jobs:
             # Navigate to deploy directory
             cd /opt/swadeshiops
 
-            # Pull latest code
-            git pull origin main
+            # Force update repository
+            git fetch --all
+            git reset --hard origin/main
 
             # Update image tag in compose
             export IMAGE_TAG=${{ github.sha }}
 
-            # Rolling restart with build to pick up frontend changes
+            # Build and restart
+            docker compose build frontend --no-cache
             docker compose pull
-            docker compose up -d --build --remove-orphans
+            docker compose up -d --remove-orphans
 
             # Health check
             echo "⏳ Waiting for health check..."
-            sleep 15
+            sleep 20
             curl -sf http://localhost:8080/api/v1/health || {
               echo "❌ Health check failed!"
-              docker compose logs --tail=50
+              docker compose logs --tail=100
               exit 1
             }
 
@@ -177,32 +179,36 @@ jobs:
 
             cd /opt/swadeshiops
 
-            # Pull latest code
-            git pull origin main
-            git fetch --tags
-            git checkout ${{ github.ref_name }}
+            # Force update repository to the specific tag
+            git fetch --all --tags
+            git reset --hard ${{ github.ref_name }}
 
             # Backup current state
+            mkdir -p /opt/backups
             docker compose exec -T postgres pg_dump -U swadeshiops swadeshiops > /opt/backups/db-$(date +%Y%m%d-%H%M%S).sql 2>/dev/null || true
 
-            # Pull and deploy with build to ensure frontend is fresh
+            # Build frontend specifically to ensure env vars are baked in
             export IMAGE_TAG=${{ github.sha }}
+            docker compose build frontend --no-cache
+            
+            # Pull other images and restart
             docker compose pull
-            docker compose up -d --build --remove-orphans
+            docker compose up -d --remove-orphans
 
             # Health check with retries
             echo "⏳ Running health checks..."
-            for i in {1..5}; do
-              sleep 15
+            for i in {1..10}; do
+              sleep 10
               if curl -sf http://localhost:8080/api/v1/health; then
                 echo "✅ Production deployment successful!"
                 exit 0
               fi
-              echo "Retry $i/5..."
+              echo "Retry $i/10..."
             done
 
-            echo "❌ Health check failed after 5 retries"
-            docker compose logs --tail=100
+            echo "❌ Health check failed after 10 retries"
+            docker compose logs frontend --tail=100
+            docker compose logs api --tail=100
             exit 1
 
       - name: Post deployment summary
