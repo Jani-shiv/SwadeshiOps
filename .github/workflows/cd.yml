@@ -117,22 +117,22 @@ jobs:
           script: |
             echo "🚀 Deploying SwadeshiOps to staging..."
 
-            # Pull latest image
-            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-
             # Navigate to deploy directory
             cd /opt/swadeshiops
+
+            # Pull latest code
+            git pull origin main
 
             # Update image tag in compose
             export IMAGE_TAG=${{ github.sha }}
 
-            # Rolling restart
+            # Rolling restart with build to pick up frontend changes
             docker compose pull
-            docker compose up -d --remove-orphans
+            docker compose up -d --build --remove-orphans
 
             # Health check
             echo "⏳ Waiting for health check..."
-            sleep 10
+            sleep 15
             curl -sf http://localhost:8080/api/v1/health || {
               echo "❌ Health check failed!"
               docker compose logs --tail=50
@@ -177,18 +177,23 @@ jobs:
 
             cd /opt/swadeshiops
 
+            # Pull latest code
+            git pull origin main
+            git fetch --tags
+            git checkout ${{ github.ref_name }}
+
             # Backup current state
             docker compose exec -T postgres pg_dump -U swadeshiops swadeshiops > /opt/backups/db-$(date +%Y%m%d-%H%M%S).sql 2>/dev/null || true
 
-            # Pull and deploy
+            # Pull and deploy with build to ensure frontend is fresh
             export IMAGE_TAG=${{ github.sha }}
             docker compose pull
-            docker compose up -d --remove-orphans
+            docker compose up -d --build --remove-orphans
 
             # Health check with retries
             echo "⏳ Running health checks..."
             for i in {1..5}; do
-              sleep 10
+              sleep 15
               if curl -sf http://localhost:8080/api/v1/health; then
                 echo "✅ Production deployment successful!"
                 exit 0
