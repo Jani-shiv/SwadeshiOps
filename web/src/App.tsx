@@ -11,6 +11,8 @@ import LogsPage from './pages/LogsPage';
 import SecretsPage from './pages/SecretsPage';
 import SettingsPage from './pages/SettingsPage';
 
+const isConfigMissing = !import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY;
+
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();
 
@@ -34,6 +36,21 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
+  if (isConfigMissing && import.meta.env.PROD) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-950 text-slate-200 p-4">
+        <div className="max-w-md w-full space-y-4 text-center">
+          <h1 className="text-2xl font-bold text-red-500">Configuration Missing</h1>
+          <p className="text-slate-400">
+            SwadeshiOps requires Supabase environment variables to function. 
+            Please ensure <code className="bg-slate-900 px-1 rounded">VITE_SUPABASE_URL</code> and 
+            <code className="bg-slate-900 px-1 rounded">VITE_SUPABASE_ANON_KEY</code> are set.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <AuthProvider>
       <BrowserRouter>
@@ -61,6 +78,3 @@ export default function App() {
     </AuthProvider>
   );
 }
-
-
-

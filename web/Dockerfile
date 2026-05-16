@@ -5,9 +5,9 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 # Build arguments for Vite environment variables
-ARG VITE_API_URL
-ARG VITE_SUPABASE_URL
-ARG VITE_SUPABASE_ANON_KEY
+ARG VITE_API_URL=/api
+ARG VITE_SUPABASE_URL=""
+ARG VITE_SUPABASE_ANON_KEY=""
 
 # Set them as environment variables for the build process
 ENV VITE_API_URL=$VITE_API_URL
